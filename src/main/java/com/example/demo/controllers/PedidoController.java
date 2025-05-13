@@ -18,8 +18,8 @@ public class PedidoController {
     @PostMapping
     public Pedido criarPedido(@RequestBody Pedido pedido) {
         pedido.setDataHoraSolicitacao(OffsetDateTime.now());
-        pedido.getItens().forEach(item -> item.setPedido(pedido));
-
+        pedido.getItens().forEach(item -> item.setPrecoTotal(item.getPrecoUnitario(), item.getQuantidade()));
+        pedido.setValorTotal();
         pedido.calcularTempoPreparo();
 
         return pedidoRepository.save(pedido);

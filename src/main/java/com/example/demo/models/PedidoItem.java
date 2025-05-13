@@ -62,8 +62,8 @@ public class PedidoItem {
         return precoTotal;
     }
 
-    public void setPrecoTotal(double precoTotal) {
-        this.precoTotal = precoTotal;
+    public void setPrecoTotal(double precoUnitario, int quantidade) {
+        this.precoTotal = precoUnitario*quantidade;
     }
 
     public int getTempoPreparo() {
