@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import com.example.demo.enums.StatusEnum;
 import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
@@ -11,18 +12,27 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer codigo;
 
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
+
     private String cliente;
-    private String status;
     private double valorTotal;
     private OffsetDateTime dataHoraSolicitacao;
     private int tempoTotalPreparo;
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PedidoItem> itens;
+
 
     public void calcularTempoPreparo(){
         this.tempoTotalPreparo = itens.stream()
                 .mapToInt(PedidoItem::getTempoPreparo)
+                .sum();
+    }
+
+    public void calcularValorTotalPedido(){
+        this.valorTotal = itens.stream()
+                .mapToDouble(PedidoItem::getPrecoTotal)
                 .sum();
     }
 
@@ -42,11 +52,11 @@ public class Pedido {
         this.cliente = cliente;
     }
 
-    public String getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusEnum status) {
         this.status = status;
     }
 
