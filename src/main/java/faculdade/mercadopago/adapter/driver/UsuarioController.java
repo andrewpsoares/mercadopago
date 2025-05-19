@@ -1,9 +1,9 @@
-package faculdade.pagamento.adapter.driver;
+package faculdade.mercadopago.adapter.driver;
 
 
-import faculdade.pagamento.core.domain.UsuarioRequest;
-import faculdade.pagamento.core.domain.model.Usuario;
-import faculdade.pagamento.core.services.UsuarioService;
+import faculdade.mercadopago.core.domain.UsuarioRequest;
+import faculdade.mercadopago.core.domain.model.Usuario;
+import faculdade.mercadopago.core.services.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

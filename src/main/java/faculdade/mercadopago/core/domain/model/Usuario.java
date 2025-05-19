@@ -1,5 +1,6 @@
-package faculdade.pagamento.core.domain.model;
+package faculdade.mercadopago.core.domain.model;
 
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

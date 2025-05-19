@@ -1,11 +1,11 @@
-package faculdade.pagamento.adapter.driven.infra;
+package faculdade.mercadopago.adapter.driven.infra;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "usuario")
+@Table(name = "usuarios")
 public class UsuarioEntity {
 
     @Id

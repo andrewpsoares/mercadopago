@@ -1,6 +1,6 @@
 package faculdade.mercadopago.adapter.driver;
 
-import faculdade.mercadopago.core.domain.Produto;
+import faculdade.mercadopago.core.domain.model.Produto;
 import faculdade.mercadopago.adapter.driven.infra.ProdutoRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/categoria/{categoria}")
-    public List<Produto> buscarPorCategoria(@PathVariable String categoria) {
+    public List<Produto> buscarPorCategoria(@PathVariable Long categoria) {
         return repository.findByCategoria(categoria);
     }
 
@@ -32,7 +32,7 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Integer id) {
+    public void deletar(@PathVariable Long id) {
         repository.deleteById(id);
     }
 }

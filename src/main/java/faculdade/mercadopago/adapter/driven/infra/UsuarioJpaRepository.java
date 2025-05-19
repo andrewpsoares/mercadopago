@@ -1,6 +1,6 @@
-package faculdade.pagamento.adapter.driven.infra;
+package faculdade.mercadopago.adapter.driven.infra;
 
-import faculdade.pagamento.core.domain.model.Usuario;
+import faculdade.mercadopago.core.domain.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

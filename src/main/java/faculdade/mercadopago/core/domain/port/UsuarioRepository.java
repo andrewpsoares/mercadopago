@@ -1,6 +1,6 @@
-package faculdade.pagamento.core.domain.port;
+package faculdade.mercadopago.core.domain.port;
 
-import faculdade.pagamento.core.domain.model.Usuario;
+import faculdade.mercadopago.core.domain.model.Usuario;
 
 import java.util.Optional;
 

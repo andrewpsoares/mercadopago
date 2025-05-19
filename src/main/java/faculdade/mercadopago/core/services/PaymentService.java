@@ -1,18 +1,15 @@
 package faculdade.mercadopago.core.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faculdade.mercadopago.AppConstants;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
-import faculdade.mercadopago.core.applications.ports.BadRequestException;
 import faculdade.mercadopago.core.domain.*;
 import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
 import faculdade.mercadopago.adapter.driven.infra.PaymentRepository;
-import org.springframework.http.ResponseEntity;
+import faculdade.mercadopago.core.domain.model.Payment;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -90,7 +87,7 @@ public class PaymentService {
         if (response.getStatusCode().is2xxSuccessful()) {
             apiResponse.setSuccess(true);
             apiResponse.setData((QrOrderResponse) response.getBody());
-            CreatePayment(101, 6, ""); // talvez seja melhor salvar o pagamento primeiro e alterar o status apos a confimação do mercado pago
+            CreatePayment(101, BigDecimal.valueOf(6), ""); // talvez seja melhor salvar o pagamento primeiro e alterar o status apos a confimação do mercado pago
         } else {
             apiResponse.setSuccess(false);
             try {
@@ -105,7 +102,7 @@ public class PaymentService {
         return apiResponse;
     }
 
-    public boolean CreatePayment(long orderId, double value, String status) {
+    public boolean CreatePayment(long orderId, BigDecimal value, String status) {
         Payment payment = new Payment();
         payment.setOrderId(orderId);
         payment.setValue(value);

@@ -1,7 +1,7 @@
-package faculdade.pagamento.adapter.driven.infra;
+package faculdade.mercadopago.adapter.driven.infra;
 
-import faculdade.pagamento.core.domain.model.Usuario;
-import faculdade.pagamento.core.domain.port.UsuarioRepository;
+import faculdade.mercadopago.core.domain.model.Usuario;
+import faculdade.mercadopago.core.domain.port.UsuarioRepository;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
