@@ -20,7 +20,7 @@ public record ListarPedidoDto(
                 dados.getUSUARIOCODIGO(),
                 dados.getSTATUS(),
                 dados.getVALORTOTAL(),
-                new Date(),
+                dados.getDATAHORASOLICITACAO(),
                 new Time(dados.getTEMPOTOTALPREPARO().getTime())
                 );
     }

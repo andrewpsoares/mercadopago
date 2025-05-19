@@ -29,7 +29,7 @@ public class PedidoExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("" +
                 "{\n" +
                 "    \"mensagem\": \"status inválido.\",\n" +
-                "    \"required\": "+ statusList + "\n" +
+                "    \"required\": \""+ statusList + "\"\n" +
                 "}");
     }
 
@@ -44,7 +44,7 @@ public class PedidoExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body
                 ("{\n" +
-                "    \"mensagem\": \"Campo obrigatório: \\\"" + campo + "\\\"\n" +
+                "    \"mensagem\": \"Campo obrigatório: \\" + campo + "\\\n" +
                 "}");
     }
 
@@ -53,18 +53,18 @@ public class PedidoExceptionHandler {
         String requestUri = request.getDescription(false);
         String id = requestUri.substring(requestUri.lastIndexOf("/") + 1);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("" +
-                "{\n" +
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body
+                ("{\n" +
                 "    \"mensagem\": \"Nenhum registro encontrado com o código " + id + "\n" +
                 "}");
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity exceptionHandlerMethodArgumentTypeMismatchException(){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("" +
-                "{\n" +
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body
+                ("{\n" +
                 "    \"mensagem\": \"Parâmetro inválido\",\n" +
-                "    \"required\": "+ statusList + "\n" +
+                "    \"required\": \"" + statusList + "\"\n" +
                 "}");
     }
 
