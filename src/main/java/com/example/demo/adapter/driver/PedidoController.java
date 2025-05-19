@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +20,15 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @GetMapping
-    public Page<ListarPedidoDto> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
-        return pedidoService.listarPedidos(pageable, status);
+    public ResponseEntity<Page<ListarPedidoDto>> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
+        var lista = pedidoService.listarPedidos(pageable, status);
+        return ResponseEntity.ok(lista);
     }
 
     @PutMapping("/{CODIGO}")
     @Transactional
-    public void alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid AlterarPedidoDto dados){
-        pedidoService.alterarPedido(CODIGO, dados);
+    public ResponseEntity alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid AlterarPedidoDto dados){
+            var pedido = pedidoService.alterarPedido(CODIGO, dados);
+            return ResponseEntity.ok(new ListarPedidoDto(pedido));
     }
 }
