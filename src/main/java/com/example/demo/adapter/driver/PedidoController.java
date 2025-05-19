@@ -1,9 +1,9 @@
-package com.example.demo.controllers;
+package com.example.demo.adapter.driver;
 
-import com.example.demo.dto.AlterarPedidoDto;
-import com.example.demo.dto.ListarPedidoDto;
-import com.example.demo.enums.StatusPedidoEnum;
-import com.example.demo.repositories.PedidoRepository;
+import com.example.demo.core.domain.dto.AlterarPedidoDto;
+import com.example.demo.core.domain.dto.ListarPedidoDto;
+import com.example.demo.core.services.PedidoService;
+import com.example.demo.core.domain.enums.StatusPedidoEnum;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,17 +15,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pedido")
 public class PedidoController {
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private PedidoService pedidoService;
 
     @GetMapping
     public Page<ListarPedidoDto> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
-        return pedidoRepository.findAllBySTATUS(pageable, status).map(ListarPedidoDto::new);
+        return pedidoService.listarPedidos(pageable, status);
     }
 
     @PutMapping("/{CODIGO}")
     @Transactional
     public void alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid AlterarPedidoDto dados){
-        var pedido = pedidoRepository.getReferenceById(CODIGO);
-        pedido.alterarStatusPedido(dados);
+        pedidoService.alterarPedido(CODIGO, dados);
     }
 }

@@ -1,10 +1,9 @@
-package com.example.demo.repositories;
+package com.example.demo.adapter.driven.infra;
 
-import com.example.demo.enums.StatusPedidoEnum;
-import com.example.demo.models.Pedido;
+import com.example.demo.core.domain.enums.StatusPedidoEnum;
+import com.example.demo.core.domain.Pedido;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Range;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PedidoRepository extends JpaRepository<Pedido,Long> {

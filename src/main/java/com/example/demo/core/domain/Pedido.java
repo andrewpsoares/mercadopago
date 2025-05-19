@@ -1,7 +1,7 @@
-package com.example.demo.models;
+package com.example.demo.core.domain;
 
-import com.example.demo.dto.AlterarPedidoDto;
-import com.example.demo.enums.StatusPedidoEnum;
+import com.example.demo.core.domain.dto.AlterarPedidoDto;
+import com.example.demo.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

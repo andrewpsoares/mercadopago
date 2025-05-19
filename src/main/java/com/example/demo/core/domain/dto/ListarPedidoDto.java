@@ -1,8 +1,7 @@
-package com.example.demo.dto;
+package com.example.demo.core.domain.dto;
 
-import com.example.demo.enums.StatusPedidoEnum;
-import com.example.demo.models.Pedido;
-import jakarta.persistence.*;
+import com.example.demo.core.domain.enums.StatusPedidoEnum;
+import com.example.demo.core.domain.Pedido;
 
 import java.sql.Time;
 import java.util.Date;
