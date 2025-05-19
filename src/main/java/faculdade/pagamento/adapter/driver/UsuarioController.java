@@ -4,6 +4,7 @@ package faculdade.pagamento.adapter.driver;
 import faculdade.pagamento.core.domain.UsuarioRequest;
 import faculdade.pagamento.core.domain.model.Usuario;
 import faculdade.pagamento.core.services.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

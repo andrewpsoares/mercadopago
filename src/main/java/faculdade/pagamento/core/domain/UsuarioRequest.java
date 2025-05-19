@@ -1,7 +1,7 @@
 package faculdade.pagamento.core.domain;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.antlr.v4.runtime.misc.NotNull;
 
 @Data
 public class UsuarioRequest {
