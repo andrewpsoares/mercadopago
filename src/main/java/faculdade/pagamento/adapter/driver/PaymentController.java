@@ -2,7 +2,7 @@ package faculdade.pagamento.adapter.driver;
 
 import faculdade.pagamento.core.domain.dto.NewPaymentDto;
 import faculdade.pagamento.core.domain.QrOrderResponse;
-import faculdade.pagamento.core.domain.Payment;
+import faculdade.pagamento.core.domain.model.Payment;
 import faculdade.pagamento.core.domain.QrPaymentResponse;
 import faculdade.pagamento.core.services.PaymentService;
 import org.springframework.web.bind.annotation.*;

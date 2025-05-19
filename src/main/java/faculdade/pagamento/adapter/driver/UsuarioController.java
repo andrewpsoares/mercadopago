@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequestMapping("/usuario")
 public class UsuarioController {
 
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     @GetMapping
     public ResponseEntity<?> buscarUsuario(@RequestParam String cpf) {

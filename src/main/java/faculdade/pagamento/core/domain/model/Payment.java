@@ -1,4 +1,4 @@
-package faculdade.pagamento.core.domain;
+package faculdade.pagamento.core.domain.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

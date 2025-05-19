@@ -1,7 +1,7 @@
 package faculdade.pagamento.core.services;
 
 import faculdade.pagamento.core.domain.dto.NewPaymentDto;
-import faculdade.pagamento.core.domain.Payment;
+import faculdade.pagamento.core.domain.model.Payment;
 import faculdade.pagamento.adapter.driven.infra.PaymentRepository;
 import org.springframework.stereotype.Service;
 
