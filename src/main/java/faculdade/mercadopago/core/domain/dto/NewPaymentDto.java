@@ -1,4 +1,4 @@
-package faculdade.pagamento.core.domain.dto;
+package faculdade.mercadopago.core.domain.dto;
 
 import lombok.Data;
 
