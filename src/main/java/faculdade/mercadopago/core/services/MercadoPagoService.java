@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MercadoPagoService<T> {
@@ -23,20 +24,19 @@ public class MercadoPagoService<T> {
         _restTemplate = restTemplate;
     }
 
-    public <T, R> ResponseEntity<?> SendRequest(String url, T request, Class<R> responseType) {
+    public <T, R> ResponseEntity<?> SendRequest(String url, T request, Class<R> responseType, Map<String, String> extraHeaders) {
         try {
             var headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + AppConstants.ACCESS_TOKEN);
             headers.setContentType(MediaType.APPLICATION_JSON);
 
+            if (extraHeaders != null) {
+                extraHeaders.forEach(headers::set);
+            }
+
             var entity = new HttpEntity<>(request, headers);
 
-            return _restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    entity,
-                    responseType
-            );
+            return _restTemplate.exchange(url, HttpMethod.POST, entity, responseType);
         } catch (HttpStatusCodeException ex) {
             return ResponseEntity
                     .status(ex.getStatusCode())

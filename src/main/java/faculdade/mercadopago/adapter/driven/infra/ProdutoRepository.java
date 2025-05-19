@@ -1,6 +1,6 @@
-package com.exemplo.lanchonete.repository;
+package faculdade.mercadopago.adapter.driven.infra;
 
-import com.exemplo.lanchonete.model.Produto;
+import faculdade.mercadopago.core.domain.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.exemplo.lanchonete.model;
+package faculdade.mercadopago.core.domain;
 
 import jakarta.persistence.*;
 

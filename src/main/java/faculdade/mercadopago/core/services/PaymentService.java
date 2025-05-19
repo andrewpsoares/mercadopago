@@ -49,20 +49,12 @@ public class PaymentService {
         );
 
         var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.GENERATEQRCODEURL_MERCADOPAGO;
-        var response = _mercadoPagoService.SendRequest(url, request, QrOrderResponse.class);
+        var response = _mercadoPagoService.SendRequest(url, request, QrOrderResponse.class, null);
         var apiResponse = new ApiResponse<QrOrderResponse>();
 
         if (response.getStatusCode().is2xxSuccessful()) {
             apiResponse.setSuccess(true);
             apiResponse.setData((QrOrderResponse) response.getBody());
-//            try {
-//                var qrOrder = new ObjectMapper().readValue(response.getBody(), QrOrderResponse.class);
-//                apiResponse.setSuccess(true);
-//                apiResponse.setData(qrOrder);
-//            } catch (Exception ex) {
-//                apiResponse.setSuccess(false);
-//                apiResponse.addError("Erro ao processar resposta do Mercado Pago: ", ex.getMessage());
-//            }
         } else {
             apiResponse.setSuccess(false);
             try {
@@ -77,12 +69,12 @@ public class PaymentService {
         return apiResponse;
     }
 
-    public ApiResponse ConfirmPayment() {
+    public ApiResponse ConfirmPayment(NewPaymentDto newPaymentDto) {
         var request = new PixPaymentRequest();
-        request.setTransactionAmount(5);
+        request.setTransactionAmount(newPaymentDto.TotalAmount);
         request.setPaymentMethodId("pix");
         request.setDescription("Compra de teste QR");
-        request.setExternalReference("101");
+        request.setExternalReference(String.valueOf(newPaymentDto.OrderId));
         request.setInstallments(1);
 
         PixPaymentRequest.Identification identification = new PixPaymentRequest.Identification("11111111111", "CPF");
@@ -91,7 +83,8 @@ public class PaymentService {
         request.setPayer(payer);
 
         var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.CONFIRMPAYMENT_MERCADOPAGO;
-        var response = _mercadoPagoService.SendRequest(url, request, QrOrderResponse.class);
+        var extraHeaders = Map.of("X-Idempotency-Key", String.format("order-%s-y423g4ygyGSa56d7sb", String.valueOf(newPaymentDto.OrderId)));
+        var response = _mercadoPagoService.SendRequest(url, request, QrOrderResponse.class, extraHeaders);
         var apiResponse = new ApiResponse<QrOrderResponse>();
 
         if (response.getStatusCode().is2xxSuccessful()) {
@@ -118,7 +111,6 @@ public class PaymentService {
         payment.setValue(value);
         payment.setStatus(status);
         payment.setPaymentDateTime(LocalDateTime.now());
-
 
         try {
             var obj = _paymentRepository.save(payment);

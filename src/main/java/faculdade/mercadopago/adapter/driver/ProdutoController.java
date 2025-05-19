@@ -1,7 +1,7 @@
-package com.exemplo.lanchonete.controller;
+package faculdade.mercadopago.adapter.driver;
 
-import com.exemplo.lanchonete.model.Produto;
-import com.exemplo.lanchonete.repository.ProdutoRepository;
+import faculdade.mercadopago.core.domain.Produto;
+import faculdade.mercadopago.adapter.driven.infra.ProdutoRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
