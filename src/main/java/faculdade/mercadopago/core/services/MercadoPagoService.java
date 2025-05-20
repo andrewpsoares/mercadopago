@@ -1,19 +1,11 @@
 package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.AppConstants;
-import faculdade.mercadopago.core.applications.ports.ErrorResponse;
-import faculdade.mercadopago.core.domain.QrOrderResponse;
-import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
-import faculdade.mercadopago.core.domain.QrOrderRequest;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Service

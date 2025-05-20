@@ -1,4 +1,4 @@
-package faculdade.mercadopago.core.domain.model;
+package faculdade.mercadopago.adapter.driven.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.sql.Time;
 @Data
 @Entity
 @Table(name = "produtos")
-public class Produto {
+public class ProdutoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,7 +1,7 @@
 package faculdade.mercadopago.core.domain.dto;
 
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
-import faculdade.mercadopago.core.domain.model.Pedido;
+import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 
 import java.sql.Time;
 import java.util.Date;
@@ -14,7 +14,7 @@ public record ListarPedidoDto(
         Date DATAHORASOLICITACAO,
         Time TEMPOTOTALPREPARO
 ) {
-    public ListarPedidoDto(Pedido dados){
+    public ListarPedidoDto(PedidoEntity dados){
         this(
                 dados.getCODIGO(),
                 dados.getUSUARIOCODIGO(),

@@ -1,10 +1,10 @@
 package faculdade.mercadopago.core.services;
 
-import faculdade.mercadopago.adapter.driven.infra.PedidoRepository;
+import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
-import faculdade.mercadopago.core.domain.model.Pedido;
+import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +17,7 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
-    public Pedido alterarPedido(Long codigo, @Valid AlterarPedidoDto dados) {
+    public PedidoEntity alterarPedido(Long codigo, @Valid AlterarPedidoDto dados) {
         var pedido = pedidoRepository.getReferenceById(codigo);
         pedido.alterarStatusPedido(dados);
         return pedido;

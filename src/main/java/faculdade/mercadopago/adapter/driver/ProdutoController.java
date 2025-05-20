@@ -1,7 +1,7 @@
 package faculdade.mercadopago.adapter.driver;
 
-import faculdade.mercadopago.core.domain.model.Produto;
-import faculdade.mercadopago.adapter.driven.infra.ProdutoRepository;
+import faculdade.mercadopago.adapter.driven.entity.ProdutoEntity;
+import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,17 +17,17 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<Produto> listarTodos() {
+    public List<ProdutoEntity> listarTodos() {
         return repository.findAll();
     }
 
     @GetMapping("/categoria/{categoria}")
-    public List<Produto> buscarPorCategoria(@PathVariable Long categoria) {
+    public List<ProdutoEntity> buscarPorCategoria(@PathVariable Long categoria) {
         return repository.findByCategoria(categoria);
     }
 
     @PostMapping
-    public Produto adicionar(@RequestBody Produto produto) {
+    public ProdutoEntity adicionar(@RequestBody ProdutoEntity produto) {
         return repository.save(produto);
     }
 

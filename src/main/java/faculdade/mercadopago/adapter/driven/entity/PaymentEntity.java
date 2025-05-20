@@ -1,4 +1,4 @@
-package faculdade.mercadopago.core.domain.model;
+package faculdade.mercadopago.adapter.driven.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "pagamentos")
-public class Payment {
+public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CODIGO")

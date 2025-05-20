@@ -3,10 +3,12 @@ package faculdade.mercadopago.core.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faculdade.mercadopago.AppConstants;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
-import faculdade.mercadopago.core.domain.*;
 import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
-import faculdade.mercadopago.adapter.driven.infra.PaymentRepository;
-import faculdade.mercadopago.core.domain.model.Payment;
+import faculdade.mercadopago.adapter.driven.repository.PaymentRepository;
+import faculdade.mercadopago.adapter.driven.entity.PaymentEntity;
+import faculdade.mercadopago.core.domain.model.PixPaymentRequest;
+import faculdade.mercadopago.core.domain.model.QrOrderRequest;
+import faculdade.mercadopago.core.domain.model.QrOrderResponse;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -103,7 +105,7 @@ public class PaymentService {
     }
 
     public boolean CreatePayment(long orderId, BigDecimal value, String status) {
-        Payment payment = new Payment();
+        PaymentEntity payment = new PaymentEntity();
         payment.setOrderId(orderId);
         payment.setValue(value);
         payment.setStatus(status);
@@ -113,7 +115,7 @@ public class PaymentService {
             var obj = _paymentRepository.save(payment);
             return obj.getId() != null;
         } catch (Exception e) {
-            ApiResponse<Payment> response = new ApiResponse<>();
+            ApiResponse<PaymentEntity> response = new ApiResponse<>();
             response.setSuccess(false);
             response.addError("Erro ao salvar pagamento", e.getMessage());
             return false;

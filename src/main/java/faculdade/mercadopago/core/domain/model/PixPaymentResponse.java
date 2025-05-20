@@ -1,4 +1,4 @@
-package faculdade.mercadopago.core.domain;
+package faculdade.mercadopago.core.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

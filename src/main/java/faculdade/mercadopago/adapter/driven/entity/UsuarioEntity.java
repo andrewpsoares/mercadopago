@@ -1,4 +1,4 @@
-package faculdade.mercadopago.adapter.driven.infra;
+package faculdade.mercadopago.adapter.driven.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

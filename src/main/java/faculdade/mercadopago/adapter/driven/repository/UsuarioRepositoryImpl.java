@@ -1,7 +1,7 @@
-package faculdade.mercadopago.adapter.driven.infra;
+package faculdade.mercadopago.adapter.driven.repository;
 
+import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
 import faculdade.mercadopago.core.domain.model.Usuario;
-import faculdade.mercadopago.core.domain.port.UsuarioRepository;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -9,17 +9,17 @@ import java.util.Optional;
 
 @Data
 @Component
-public class UsuarioRepositoryImpl implements UsuarioRepository {
+public abstract class UsuarioRepositoryImpl implements UsuarioRepository {
 
-    private final UsuarioJpaRepository usuarioJpaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioRepositoryImpl(UsuarioJpaRepository usuarioJpaRepository) {
-        this.usuarioJpaRepository = usuarioJpaRepository;
+    public UsuarioRepositoryImpl(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public Optional<Usuario> findByCpf(String cpf) {
-        return usuarioJpaRepository.findByCpf(cpf)
+        return usuarioRepository.findByCpf(cpf)
                 .map(entity -> new Usuario(entity.getNome(), entity.getCpf(), entity.getEmail()));
     }
 
@@ -29,7 +29,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
         entity.setNome(usuario.getNome());
         entity.setCpf(usuario.getCpf());
         entity.setEmail(usuario.getEmail());
-        UsuarioEntity savedEntity = usuarioJpaRepository.save(entity);
+        UsuarioEntity savedEntity = usuarioRepository.save(entity);
         return new Usuario(savedEntity.getNome(), savedEntity.getCpf(), savedEntity.getEmail());
     }
 }

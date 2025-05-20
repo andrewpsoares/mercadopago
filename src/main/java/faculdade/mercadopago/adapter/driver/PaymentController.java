@@ -3,7 +3,7 @@ package faculdade.mercadopago.adapter.driver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
-import faculdade.mercadopago.core.domain.QrOrderResponse;
+import faculdade.mercadopago.core.domain.model.QrOrderResponse;
 import faculdade.mercadopago.core.services.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

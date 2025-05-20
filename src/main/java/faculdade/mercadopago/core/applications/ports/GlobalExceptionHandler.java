@@ -1,6 +1,5 @@
 package faculdade.mercadopago.core.applications.ports;
 
-import faculdade.mercadopago.core.domain.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

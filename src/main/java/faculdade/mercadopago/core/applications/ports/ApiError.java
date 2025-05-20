@@ -1,4 +1,4 @@
-package faculdade.mercadopago.core.domain.dto;
+package faculdade.mercadopago.core.applications.ports;
 
 import lombok.Data;
 

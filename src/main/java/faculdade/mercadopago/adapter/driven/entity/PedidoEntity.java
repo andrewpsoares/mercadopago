@@ -1,4 +1,4 @@
-package faculdade.mercadopago.core.domain.model;
+package faculdade.mercadopago.adapter.driven.entity;
 
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "Pedido")
 @Table(name = "pedidos")
@@ -17,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @EqualsAndHashCode(of = {"CODIGO"})
-public class Pedido {
+public class PedidoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long CODIGO;
@@ -28,6 +29,9 @@ public class Pedido {
     private Double VALORTOTAL;
     private Date DATAHORASOLICITACAO;
     private Time TEMPOTOTALPREPARO;
+
+    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoItemEntity> Itens;
 
     public void alterarStatusPedido( AlterarPedidoDto dados) {
         if (dados.status() != null){
