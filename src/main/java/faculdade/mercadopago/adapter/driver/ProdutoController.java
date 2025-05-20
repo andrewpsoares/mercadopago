@@ -35,4 +35,6 @@ public class ProdutoController {
     public void deletar(@PathVariable Long id) {
         repository.deleteById(id);
     }
+
+    //adicionar o PUT
 }

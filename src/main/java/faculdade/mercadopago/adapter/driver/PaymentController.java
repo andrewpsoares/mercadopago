@@ -29,14 +29,12 @@ public class PaymentController {
         }
     }
 
+    // outros post para receber informação que o cliente pagou (param numero pedido e o valor)
+
 //    @PostMapping(path = "/mercadopago")
 //    public Payment ReponseQrCode(@RequestBody QrPaymentResponse paymentResponseDto) {
 //        var teste = new Payment();
 //        return teste;
 //    }
-//
-//    @GetMapping
-//    public void GetStatus(@RequestBody QrOrderResponse responseGenerateQrCodeDto) {
-//        var teste = responseGenerateQrCodeDto;
-//    }
+
 }

@@ -26,4 +26,6 @@ public class PedidoService {
     public Page<ListarPedidoDto> listarPedidos(Pageable pageable, StatusPedidoEnum status){
         return pedidoRepository.findAllBySTATUS(pageable, status).map(ListarPedidoDto::new);
     }
+
+    // adicionar pedido na fila (param codigo pedido)
 }
