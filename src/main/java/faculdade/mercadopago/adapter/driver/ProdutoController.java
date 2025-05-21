@@ -36,5 +36,13 @@ public class ProdutoController {
         repository.deleteById(id);
     }
 
-    //adicionar o PUT
+    @PutMapping("/{codigo}")
+    public ResponseEntity<Produto> atualizar(@PathVariable Long codigo, @RequestBody Produto produto) {
+        if (!repository.existsById(codigo)) {
+            return ResponseEntity.notFound().build();
+        }
+        produto.setCodigo(codigo);
+        Produto atualizado = repository.save(produto);
+        return ResponseEntity.ok(atualizado);
+    }
 }
