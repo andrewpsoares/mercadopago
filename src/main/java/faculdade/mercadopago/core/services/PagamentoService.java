@@ -129,6 +129,8 @@ public class PagamentoService {
                 var resultado = CreatePagamento(Long.parseLong(codigo), BigDecimal.valueOf(valorPago), status);
                 if (resultado) {
                     apiResponse.setData(null);
+                    //chamar metodo altera status pedido
+                    //chamar metodo adiciona pedido na fila
                 }
             } else {
                 apiResponse.setSuccess(false);
