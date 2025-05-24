@@ -31,25 +31,25 @@ public class UsuarioService {
 
 
     public Usuario processarUsuario(UsuarioRequest request) {
-        UsuarioEntity usuarioEntity = new UsuarioEntity();
+        UsuarioEntity usuario = new UsuarioEntity();
 
         if (request.getIdentificar_usuario()) {
-            usuarioEntity.setNome(request.getNome());
-            usuarioEntity.setCpf(request.getCpf());
-            usuarioEntity.setEmail(request.getEmail());
+            usuario.setNome(request.getNome());
+            usuario.setCpf(request.getCpf());
+            usuario.setEmail(request.getEmail());
         } else {
-            usuarioEntity.setNome("USUARIO PADRAO");
-            usuarioEntity.setCpf("00000000000");
-            usuarioEntity.setEmail("padrao@email.com");
+            usuario.setNome("USUARIO PADRAO");
+            usuario.setCpf("00000000000");
+            usuario.setEmail("padrao@email.com");
         }
 
-        UsuarioEntity salvo = usuarioRepository.save(usuarioEntity);
+        UsuarioEntity usuarioEntity = usuarioRepository.save(usuario);
 
         return Usuario.builder()
-                .codigo(salvo.getCodigo())
-                .nome(salvo.getNome())
-                .cpf(salvo.getCpf())
-                .email(salvo.getEmail())
+                .codigo(usuarioEntity.getCodigo())
+                .nome(usuarioEntity.getNome())
+                .cpf(usuarioEntity.getCpf())
+                .email(usuarioEntity.getEmail())
                 .build();
     }
 
