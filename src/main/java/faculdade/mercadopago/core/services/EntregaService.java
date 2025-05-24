@@ -30,6 +30,8 @@ public class EntregaService {
         pedido.setStatus(StatusPedidoEnum.FINALIZADO);
         pedidoRepository.save(pedido);
 
+        var pedidoFila = filaPedidosPreparacaoRepository.findByPedidocodigo(pedido);
+        filaPedidosPreparacaoRepository.delete(pedidoFila);
 
         EntregaEntity entrega = new EntregaEntity();
         entrega.setPedidoCodigo(pedido);
