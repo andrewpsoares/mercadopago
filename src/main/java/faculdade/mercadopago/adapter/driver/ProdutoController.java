@@ -4,8 +4,10 @@ import faculdade.mercadopago.adapter.driven.entity.ProdutoEntity;
 import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewProdutoDto;
+import faculdade.mercadopago.core.domain.dto.ViewCategoriaDto;
 import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
 import faculdade.mercadopago.core.services.ProdutoService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +22,16 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    public ProdutoController(ProdutoRepository repository) {
-        this.repository = repository;
+    @GetMapping("/buscar/{codigoProduto}")
+    public ResponseEntity<ApiResponse<ViewProdutoDto>> buscarPorCodigoProduto(@PathVariable Long codigoProduto) {
+         var response = produtoService.buscarProduto(codigoProduto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping
-    public List<ProdutoEntity> listarTodos() {
-        return repository.findAll();
-    }
-
-    @GetMapping("/categoria/{categoria}")
-    public List<ProdutoEntity> buscarPorCategoria(@PathVariable Long categoria) {
-        return repository.findByCategoria(categoria);
+    @GetMapping("/buscar/{categoria}")
+    public ResponseEntity<ApiResponse<ViewCategoriaDto>> buscarPorCategoriaProduto(@PathVariable Long codigoCategoria) {
+        var response = produtoService.buscarProdutoCategoria(codigoCategoria);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
@@ -40,18 +40,16 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        repository.deleteById(id);
+    @DeleteMapping("/{codigo}")
+    @Transactional
+    public ResponseEntity removerProduto(@PathVariable Long codigo){
+        produtoService.removerProduto(codigo);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<ProdutoEntity> atualizar(@PathVariable Long codigo, @RequestBody ViewProdutoDto produto) {
-        if (!repository.existsById(codigo)) {
-            return ResponseEntity.notFound().build();
-        }
-        produto.setCodigo(codigo);
-        ProdutoEntity atualizado = repository.save(produto);
-        return ResponseEntity.ok(atualizado);
+    public ResponseEntity<ApiResponse<ViewProdutoDto>> atualizar(@PathVariable Long codigo, @RequestBody ViewProdutoDto produto) {
+        var response = produtoService.atualizarProduto(produto, codigo);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

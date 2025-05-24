@@ -20,7 +20,7 @@ public class ProdutoEntity {
 
     @OneToOne
     @JoinColumn(name = "categoriacodigo", referencedColumnName = "codigo")
-    private long categoria;
+    private CategoriaEntity categoria;
 
     private BigDecimal preco;
     private Time tempopreparo;

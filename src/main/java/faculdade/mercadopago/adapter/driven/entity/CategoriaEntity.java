@@ -1,12 +1,10 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
-@Table(name = "Categorias")
+@Entity
+@Table(name = "categorias")
 @Data
 public class CategoriaEntity {
     @Id
