@@ -39,5 +39,4 @@ public class PagamentoController {
         if (response.isSuccess()) return ResponseEntity.ok(response);
         else return ResponseEntity.badRequest().body(response);
     }
-
 }

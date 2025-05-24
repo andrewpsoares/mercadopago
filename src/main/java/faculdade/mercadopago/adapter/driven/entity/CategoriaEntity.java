@@ -9,7 +9,9 @@ import lombok.Data;
 public class CategoriaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Codigo;
+    @Column(name = "codigo")
+    private long codigo;
 
-    private String Nome;
+    @Column(name = "nome")
+    private String nome;
 }
