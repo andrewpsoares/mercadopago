@@ -1,12 +1,18 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Table(name = "pedidoitem")
-@Data
+@Getter
+@Setter
+@Entity(name = "pedidoitem")
+@EqualsAndHashCode(of = "Codigo")
 public class PedidoItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,13 +20,14 @@ public class PedidoItemEntity {
 
     @ManyToOne
     @JoinColumn(name = "pedidocodigo")
-    @Column(name = "pedidocodigo")
-    private long PedidoCodigo;
+    @JsonIgnore
+    private PedidoEntity pedido;
 
     @Column(name = "produtocodigo")
     private long ProdutoCodigo;
 
-    private double Quantidade;
+    @Column(name = "quantidade")
+    private int Quantidade;
 
     @Column(name = "precounitario")
     private BigDecimal PrecoUnitario;

@@ -1,41 +1,51 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
-@Entity(name = "Pedido")
+@Entity(name = "pedidos")
 @Table(name = "pedidos")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@EqualsAndHashCode(of = {"CODIGO"})
+@Setter
+@EqualsAndHashCode(of = {"codigo"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PedidoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long CODIGO;
-    private Long USUARIOCODIGO;
+    private Long codigo;
+
+    @Column(name = "usuariocodigo")
+    private Long usuariocodigo;
 
     @Enumerated(EnumType.STRING)
-    private StatusPedidoEnum STATUS;
-    private Double VALORTOTAL;
-    private Date DATAHORASOLICITACAO;
-    private Time TEMPOTOTALPREPARO;
+    @Column(name = "status")
+    private StatusPedidoEnum status;
 
-    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PedidoItemEntity> Itens;
+    @Column(name = "valortotal")
+    private BigDecimal valortotal;
+
+    @Column(name = "datahorasolicitacao")
+    private Date datahorasolicitacao;
+
+    @Column(name = "tempototalpreparo")
+    private Time tempototalpreparo;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoItemEntity> itens;
 
     public void alterarStatusPedido( AlterarPedidoDto dados) {
         if (dados.status() != null){
-            this.STATUS = dados.status();
+            this.status = dados.status();
         }
     }
 }

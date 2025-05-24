@@ -2,6 +2,7 @@ package faculdade.mercadopago.adapter.driver;
 
 import faculdade.mercadopago.adapter.driven.entity.ProdutoEntity;
 import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,12 +38,12 @@ public class ProdutoController {
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<Produto> atualizar(@PathVariable Long codigo, @RequestBody Produto produto) {
+    public ResponseEntity<ProdutoEntity> atualizar(@PathVariable Long codigo, @RequestBody ProdutoEntity produto) {
         if (!repository.existsById(codigo)) {
             return ResponseEntity.notFound().build();
         }
         produto.setCodigo(codigo);
-        Produto atualizado = repository.save(produto);
+        ProdutoEntity atualizado = repository.save(produto);
         return ResponseEntity.ok(atualizado);
     }
 }

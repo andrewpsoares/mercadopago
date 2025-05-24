@@ -3,25 +3,26 @@ package faculdade.mercadopago.core.domain.dto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.Date;
 
 public record ListarPedidoDto(
-        Long CODIGO,
-        Long USUARIOCODIGO,
-        StatusPedidoEnum STATUS,
-        Double VALORTOTAL,
-        Date DATAHORASOLICITACAO,
-        Time TEMPOTOTALPREPARO
+        Long codigo,
+        Long usuariocodigo,
+        StatusPedidoEnum status,
+        BigDecimal valortotal,
+        Date datahorasolicitacao,
+        Time tempototalpreparo
 ) {
     public ListarPedidoDto(PedidoEntity dados){
         this(
-                dados.getCODIGO(),
-                dados.getUSUARIOCODIGO(),
-                dados.getSTATUS(),
-                dados.getVALORTOTAL(),
-                dados.getDATAHORASOLICITACAO(),
-                new Time(dados.getTEMPOTOTALPREPARO().getTime())
+                dados.getCodigo(),
+                dados.getUsuariocodigo(),
+                dados.getStatus(),
+                dados.getValortotal(),
+                dados.getDatahorasolicitacao(),
+                new Time(dados.getTempototalpreparo().getTime())
         );
     }
 }
