@@ -2,14 +2,17 @@ package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.adapter.driven.entity.FilaPedidosPreparacaoEntity;
 import faculdade.mercadopago.adapter.driven.entity.PedidoItemEntity;
+import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
 import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoItemRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
+import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
+import faculdade.mercadopago.core.domain.model.Usuario;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,12 +20,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PedidoService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
 
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
@@ -41,6 +46,7 @@ public class PedidoService {
     }
 
     public PedidoEntity criarPedido(CriarPedidoDto dados){
+
         PedidoEntity pedido = new PedidoEntity();
         System.out.println(dados);
         List<PedidoItemEntity> itens = dados.itens().stream().map(
@@ -54,7 +60,7 @@ public class PedidoService {
                     return  item;
                 }).toList();
 
-        pedido.setUsuariocodigo(dados.usuariocodigo());
+        pedido.setUsuario(dados.usuariocodigo());
         pedido.setStatus(StatusPedidoEnum.RECEBIDO);
         pedido.setValortotal(dados.valortotal());
         pedido.setDatahorasolicitacao(dados.datahorasolicitacao());

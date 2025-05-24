@@ -1,17 +1,14 @@
 package faculdade.mercadopago.core.domain.model;
 
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Usuario {
 
+    private long codigo;
     private String nome;
     private String cpf;
     private String email;

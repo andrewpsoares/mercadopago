@@ -1,12 +1,12 @@
 package faculdade.mercadopago.core.services;
 
-import faculdade.mercadopago.core.domain.model.UsuarioRequest;
-import faculdade.mercadopago.core.domain.model.Usuario;
+import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
 import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
+import faculdade.mercadopago.core.applications.ports.BadRequestException;
+import faculdade.mercadopago.core.domain.model.Usuario;
+import faculdade.mercadopago.core.domain.model.UsuarioRequest;
 import lombok.Builder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Builder
 @Service
@@ -14,34 +14,44 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public Usuario buscarUsuarioCpf(String cpf) {
+        UsuarioEntity usuarioEntity = usuarioRepository.findByCpf(cpf);
+
+        if (usuarioEntity == null) {
+            throw new BadRequestException.UsuarioNaoEncontradoException("Usuário não encontrado com CPF: " + cpf);
+        }
+
+        return Usuario.builder()
+                .codigo(usuarioEntity.getCodigo())
+                .nome(usuarioEntity.getNome())
+                .cpf(usuarioEntity.getCpf())
+                .email(usuarioEntity.getEmail())
+                .build();
     }
 
-    public Optional<Usuario> buscarUsuarioCpf(String cpf) {
-        return usuarioRepository.findByCpf(cpf);
-    }
 
     public Usuario processarUsuario(UsuarioRequest request) {
+        UsuarioEntity usuario = new UsuarioEntity();
+
         if (request.getIdentificar_usuario()) {
-
-            Usuario usuario = Usuario.builder()
-                            .nome(request.getNome())
-                            .cpf(request.getCpf())
-                            .email(request.getEmail())
-                            .build();
-
-            return usuarioRepository.save(usuario);
-
+            usuario.setNome(request.getNome());
+            usuario.setCpf(request.getCpf());
+            usuario.setEmail(request.getEmail());
         } else {
-
-            Usuario usuarioPadrao = Usuario.builder()
-                    .nome("USUARIO PADRAO")
-                    .cpf("00000000000")
-                    .email("padrao@email.com")
-                    .build();
-
-            return usuarioRepository.save(usuarioPadrao);
+            usuario.setNome("USUARIO PADRAO");
+            usuario.setCpf("00000000000");
+            usuario.setEmail("padrao@email.com");
         }
+
+        UsuarioEntity usuarioEntity = usuarioRepository.save(usuario);
+
+        return Usuario.builder()
+                .codigo(usuarioEntity.getCodigo())
+                .nome(usuarioEntity.getNome())
+                .cpf(usuarioEntity.getCpf())
+                .email(usuarioEntity.getEmail())
+                .build();
     }
+
+
 }
