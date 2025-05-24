@@ -4,6 +4,7 @@ import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
+import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.services.PedidoService;
@@ -32,16 +33,22 @@ public class PedidoController {
 
     @PutMapping("/{CODIGO}")
     @Transactional
-    public ResponseEntity alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid AlterarPedidoDto dados){
-        var pedido = pedidoService.alterarPedido(CODIGO, dados);
+    public ResponseEntity alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid StatusPedidoEnum status){
+        var pedido = pedidoService.alterarPedido(CODIGO, status);
         return ResponseEntity.ok(new ListarPedidoDto(pedido));
     }
 
-    // adicionar create do pedido
     @PostMapping
     @Transactional
     public ResponseEntity incluirPedido(@RequestBody @Valid CriarPedidoDto dados){
         var pedido = pedidoService.criarPedido(dados);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+    }
+
+    @DeleteMapping("/{codigoPedido}")
+    @Transactional
+    public ResponseEntity removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
+        pedidoService.removerPedidoDaFila(codigoPedido);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 }

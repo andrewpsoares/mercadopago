@@ -18,7 +18,8 @@ public class ProdutoEntity {
     private String nome;
     private String descricao;
 
-    @Column(name = "categoriacodigo")
+    @OneToOne
+    @JoinColumn(name = "categoriacodigo", referencedColumnName = "codigo")
     private long categoria;
 
     private BigDecimal preco;

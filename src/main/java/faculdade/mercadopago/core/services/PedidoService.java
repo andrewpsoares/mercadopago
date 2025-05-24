@@ -35,9 +35,10 @@ public class PedidoService {
     @Autowired
     private  PedidoItemRepository pedidoItemRepository;
 
-    public PedidoEntity alterarPedido(Long codigo, @Valid AlterarPedidoDto dados) {
+    public PedidoEntity alterarPedido(Long codigo, StatusPedidoEnum status) {
         var pedido = pedidoRepository.getReferenceById(codigo);
-        pedido.alterarStatusPedido(dados);
+        pedido.alterarStatusPedido(status);
+        pedidoRepository.save(pedido);
         return pedido;
     }
 
@@ -69,11 +70,15 @@ public class PedidoService {
         return  pedidoRepository.save(pedido);
     }
 
-    // adicionar pedido na fila (param codigo pedido)
     public FilaPedidosPreparacaoEntity adicionarPedidoNaFila(Long codigo){
         var pedido = pedidoRepository.getReferenceById(codigo);
         FilaPedidosPreparacaoEntity pedidoFila = new FilaPedidosPreparacaoEntity();
         pedidoFila.setPedidocodigo(pedido);
         return filaPedidosPreparacaoRepository.save(pedidoFila);
+    }
+
+    public void removerPedidoDaFila(Long codigo){
+        FilaPedidosPreparacaoEntity pedidoFila = filaPedidosPreparacaoRepository.getReferenceById(codigo);
+        filaPedidosPreparacaoRepository.delete(pedidoFila);
     }
 }

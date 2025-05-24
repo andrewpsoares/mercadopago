@@ -44,9 +44,9 @@ public class PedidoEntity {
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoItemEntity> itens;
 
-    public void alterarStatusPedido( AlterarPedidoDto dados) {
-        if (dados.status() != null){
-            this.status = dados.status();
+    public void alterarStatusPedido(StatusPedidoEnum status) {
+        if (status != null){
+            this.status = status;
         }
     }
 

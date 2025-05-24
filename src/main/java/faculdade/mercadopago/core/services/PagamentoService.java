@@ -21,12 +21,14 @@ public class PagamentoService {
     private final PaymentRepository _paymentRepository;
     private final MercadoPagoService _mercadoPagoService;
     private final PedidoRepository _pedidoRepository;
+    private final PedidoService _pedidoService;
 
     public PagamentoService(PaymentRepository paymentRepository, MercadoPagoService mercadoPagoService,
-                            PedidoRepository pedidoRepository) {
+                            PedidoRepository pedidoRepository, PedidoService pedidoService) {
         _paymentRepository = paymentRepository;
         _mercadoPagoService = mercadoPagoService;
         _pedidoRepository = pedidoRepository;
+        _pedidoService = pedidoService;
     }
 
     public ApiResponse<QrOrderResponse> GerarQrCode(NewPaymentDto paymentDto) {
@@ -72,42 +74,6 @@ public class PagamentoService {
         return apiResponse;
     }
 
-//    public ApiResponse ConfirmPayment(NewPaymentDto newPaymentDto) {
-//        var request = new PixPaymentRequest();
-//        request.setTransactionAmount(newPaymentDto.TotalAmount);
-//        request.setPaymentMethodId("pix");
-//        request.setDescription("Compra de teste QR");
-//        request.setExternalReference(String.valueOf(newPaymentDto.OrderId));
-//        request.setInstallments(1);
-//
-//        PixPaymentRequest.Identification identification = new PixPaymentRequest.Identification("11111111111", "CPF");
-//        PixPaymentRequest.Payer payer = new PixPaymentRequest.Payer("Teste", "Test", "test_user_249718537@testuser.com", identification);
-//
-//        request.setPayer(payer);
-//
-//        var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.CONFIRMPAYMENT_MERCADOPAGO;
-//        var extraHeaders = Map.of("X-Idempotency-Key", String.format("order-%s-y423g4ygyGSa56d7sb", String.valueOf(newPaymentDto.OrderId)));
-//        var response = _mercadoPagoService.SendRequest(url, HttpMethod.POST, request, QrOrderResponse.class, extraHeaders);
-//        var apiResponse = new ApiResponse<QrOrderResponse>();
-//
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            apiResponse.setSuccess(true);
-//            apiResponse.setData((QrOrderResponse) response.getBody());
-//            CreatePagamento(101, BigDecimal.valueOf(6), ""); // talvez seja melhor salvar o pagamento primeiro e alterar o status apos a confimação do mercado pago
-//        } else {
-//            apiResponse.setSuccess(false);
-//            try {
-//                var mapper = new ObjectMapper();
-//                var errorResponse = mapper.readValue((String) response.getBody(), ApiResponse.Err.class);
-//                apiResponse.addError("Erro ao gerar QR Code: " + errorResponse.getError(), errorResponse.getMessage());
-//            } catch (Exception ex) {
-//                apiResponse.addError("Erro ao interpretar resposta de erro: ",(String) response.getBody());
-//            }
-//        }
-//
-//        return apiResponse;
-//    }
-
     public ApiResponse ConfirmaPagamento (QrOrderPagamentoResponse orderResponse) {
         var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.CONFIRMPAYMENT_MERCADOPAGO + "/" + orderResponse.getId();
         var response = _mercadoPagoService.SendRequest(url, HttpMethod.GET, PixPaymentResponse.class);
@@ -129,8 +95,8 @@ public class PagamentoService {
                 var resultado = CreatePagamento(Long.parseLong(codigo), BigDecimal.valueOf(valorPago), status);
                 if (resultado) {
                     apiResponse.setData(null);
-                    //chamar metodo altera status pedido
-                    //chamar metodo adiciona pedido na fila
+                    _pedidoService.alterarPedido(Long.parseLong(codigo), StatusPedidoEnum.EM_PREPARO);
+                    _pedidoService.adicionarPedidoNaFila(Long.parseLong(codigo));
                 }
             } else {
                 apiResponse.setSuccess(false);
