@@ -16,6 +16,7 @@ public record ListarPedidoDto(
         Time tempototalpreparo
 ) {
     public ListarPedidoDto(PedidoEntity dados){
+
         this(
                 dados.getCodigo(),
                 dados.getUsuariocodigo(),

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,12 +12,11 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
-@Entity(name = "pedidos")
+@Data
+@Entity
 @Table(name = "pedidos")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @EqualsAndHashCode(of = {"codigo"})
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PedidoEntity {
@@ -24,8 +24,9 @@ public class PedidoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
 
-    @Column(name = "usuariocodigo")
-    private Long usuariocodigo;
+    @ManyToOne
+    @JoinColumn(name = "usuariocodigo")
+    private UsuarioEntity usuario;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -47,5 +48,13 @@ public class PedidoEntity {
         if (dados.status() != null){
             this.status = dados.status();
         }
+    }
+
+
+    public void setUsuario(@NotNull Long usuariocodigo) {
+    }
+
+    public Long getUsuariocodigo() {
+        return this.usuario.getCodigo();
     }
 }

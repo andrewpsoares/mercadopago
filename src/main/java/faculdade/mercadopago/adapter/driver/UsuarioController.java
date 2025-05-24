@@ -20,25 +20,15 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<?> buscarUsuario(@RequestParam String cpf) {
-        Optional<Usuario> usuario = usuarioService.buscarUsuarioCpf(cpf);
-
-        try {
-            return ResponseEntity.ok().body(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Usuário não possui cadastro.");
-        }
+    public ResponseEntity<Usuario> buscarUsuario(@RequestParam String cpf) {
+        Usuario usuario = usuarioService.buscarUsuarioCpf(cpf);
+        return ResponseEntity.ok(usuario);
     }
 
-    @PostMapping
-    public ResponseEntity<?> criarUsuario(@RequestBody @Valid UsuarioRequest request) {
 
-        try {
-            Usuario usuario = usuarioService.processarUsuario(request);
-            return ResponseEntity.ok("Usuário cadastrado com sucesso: " + usuario);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PostMapping
+    public ResponseEntity<Usuario> criarUsuario(@RequestBody @Valid UsuarioRequest request) {
+        Usuario usuario = usuarioService.processarUsuario(request);
+            return ResponseEntity.ok(usuario);
     }
 }
