@@ -3,7 +3,7 @@ package faculdade.mercadopago.core.domain.model;
 import lombok.Data;
 
 @Data
-public class QrPaymentResponse {
+public class QrOrderPagamentoResponse {
     private String id;
     private Boolean live_mode;
     private String type;

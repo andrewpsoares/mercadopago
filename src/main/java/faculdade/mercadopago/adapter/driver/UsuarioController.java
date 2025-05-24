@@ -4,6 +4,7 @@ package faculdade.mercadopago.adapter.driver;
 import faculdade.mercadopago.core.domain.model.UsuarioRequest;
 import faculdade.mercadopago.core.domain.model.Usuario;
 import faculdade.mercadopago.core.services.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

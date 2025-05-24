@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Table(name = "pedidoitem")
 @Getter
 @Setter
-@Entity(name = "pedidoitem")
+@Entity
 @EqualsAndHashCode(of = "Codigo")
 public class PedidoItemEntity {
     @Id

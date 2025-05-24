@@ -11,7 +11,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 
-@Entity(name = "pedidos")
+@Entity
 @Table(name = "pedidos")
 @AllArgsConstructor
 @NoArgsConstructor

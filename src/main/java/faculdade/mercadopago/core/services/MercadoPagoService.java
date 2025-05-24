@@ -10,13 +10,14 @@ import java.util.Map;
 
 @Service
 public class MercadoPagoService<T> {
-    private final RestTemplate _restTemplate;
+//    private final RestTemplate _restTemplate;
+    private final RestTemplate _restTemplate = new RestTemplate();
 
-    public MercadoPagoService(RestTemplate restTemplate) {
-        _restTemplate = restTemplate;
-    }
+//    public MercadoPagoService(RestTemplate restTemplate) {
+//        _restTemplate = restTemplate;
+//    }
 
-    public <T, R> ResponseEntity<?> SendRequest(String url, T request, Class<R> responseType, Map<String, String> extraHeaders) {
+    public <T, R> ResponseEntity<?> SendRequest(String url, HttpMethod method, T request, Class<R> responseType, Map<String, String> extraHeaders) {
         try {
             var headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + AppConstants.ACCESS_TOKEN);
@@ -26,9 +27,11 @@ public class MercadoPagoService<T> {
                 extraHeaders.forEach(headers::set);
             }
 
-            var entity = new HttpEntity<>(request, headers);
+            var entity = method == HttpMethod.GET || method == HttpMethod.DELETE
+                    ? new HttpEntity<>(headers)
+                    : new HttpEntity<>(request, headers);
 
-            return _restTemplate.exchange(url, HttpMethod.POST, entity, responseType);
+            return _restTemplate.exchange(url, method, entity, responseType);
         } catch (HttpStatusCodeException ex) {
             return ResponseEntity
                     .status(ex.getStatusCode())
@@ -40,14 +43,11 @@ public class MercadoPagoService<T> {
         }
     }
 
-//    public Mono<QrOrderResponse> GetPayment(String externalReference) {
-//        return _webClient.get()
-//                .uri(uriBuilder -> uriBuilder
-//                        .path("/v1/payments/search")
-//                        .queryParam("external_reference", externalReference)
-//                        .build())
-//                .header("Authorization", "Bearer " + AppConstants.ACCESS_TOKEN)
-//                .retrieve()
-//                .bodyToMono(QrOrderResponse.class);
-//    }
+    public <R> ResponseEntity<?> SendRequest(
+            String url,
+            HttpMethod method,
+            Class<R> responseType
+    ) {
+        return SendRequest(url, method, null, responseType, null);
+    }
 }

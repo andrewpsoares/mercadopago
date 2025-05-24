@@ -1,0 +1,14 @@
+# Usar imagem base do OpenJDK 17
+FROM openjdk:17-jdk-slim
+
+# Diretório de trabalho
+WORKDIR /app
+
+# Copiar o JAR gerado
+COPY target/mercadopago-0.0.1-SNAPSHOT.jar app.jar
+
+# Expor porta usada pela aplicação
+EXPOSE 8080
+
+# Comando para rodar a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
