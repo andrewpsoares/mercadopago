@@ -23,15 +23,25 @@ public class PedidoItemEntity {
     @JsonIgnore
     private PedidoEntity pedido;
 
-    @Column(name = "produtocodigo")
-    private long ProdutoCodigo;
+    @ManyToOne
+    @JoinColumn(name = "produtocodigo")
+    @JsonIgnore
+    private ProdutoEntity produtocodigo;
 
     @Column(name = "quantidade")
-    private int Quantidade;
+    private int quantidade;
 
     @Column(name = "precounitario")
-    private BigDecimal PrecoUnitario;
+    private BigDecimal precounitario;
 
     @Column(name = "precototal")
-    private BigDecimal PrecoTotal;
+    private BigDecimal precototal;
+
+    public BigDecimal calcularPrecoTotalItem() {
+        if (this.produtocodigo != null && this.produtocodigo.getPreco() != null && quantidade > 0) {
+           return this.precototal = this.produtocodigo.getPreco().multiply(BigDecimal.valueOf(quantidade));
+        } else {
+            return this.precototal = BigDecimal.ZERO;
+        }
+    }
 }

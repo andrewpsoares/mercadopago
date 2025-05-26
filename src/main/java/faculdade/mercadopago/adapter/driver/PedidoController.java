@@ -1,21 +1,22 @@
 package faculdade.mercadopago.adapter.driver;
 
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.EntregaDto;
-import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
+import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.services.PedidoService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pedido")
@@ -26,28 +27,33 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @GetMapping
-    public ResponseEntity<Page<ListarPedidoDto>> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
+    @Operation(summary = "Listar pedidos por status", description = "Lista um pedido a partir de um dos status pré definidos")
+    public ResponseEntity<Page<ViewPedidoDto>> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
         var lista = pedidoService.listarPedidos(pageable, status);
         return ResponseEntity.ok(lista);
     }
 
-    @PutMapping("/{CODIGO}")
+    @PutMapping("/{codigo}")
     @Transactional
-    public ResponseEntity alterarStatusPedido(@PathVariable Long CODIGO, @RequestBody @Valid StatusPedidoEnum status){
-        var pedido = pedidoService.alterarPedido(CODIGO, status);
-        return ResponseEntity.ok(new ListarPedidoDto(pedido));
+    @Operation(summary = "Alterar o status do pedido", description = "Altera o status de um pedido com base no código do pedido e status desejado")
+    public ResponseEntity<ViewPedidoDto> alterarStatusPedido(@PathVariable Long codigo, @RequestBody @NotNull Map<String, Object> request){
+        StatusPedidoEnum status = StatusPedidoEnum.valueOf(request.get("status").toString());
+        var pedido = pedidoService.alterarPedido(codigo, status);
+        return ResponseEntity.ok(new ViewPedidoDto(pedido));
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity incluirPedido(@RequestBody @Valid CriarPedidoDto dados){
+    @Operation(summary = "Incluir pedido", description = "Registra um pedido no sistema")
+    public ResponseEntity<PedidoEntity> incluirPedido(@RequestBody @Valid NewPedidoDto dados){
         var pedido = pedidoService.criarPedido(dados);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
     @DeleteMapping("/{codigoPedido}")
     @Transactional
-    public ResponseEntity removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
+    @Operation(summary = "Remover pedido da fila", description = "Remove um pedido da fila de preparo com base no código do item na fila")
+    public ResponseEntity<Void> removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
         pedidoService.removerPedidoDaFila(codigoPedido);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

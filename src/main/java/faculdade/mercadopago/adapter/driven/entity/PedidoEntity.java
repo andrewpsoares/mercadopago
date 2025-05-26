@@ -1,15 +1,16 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -36,7 +37,7 @@ public class PedidoEntity {
     private BigDecimal valortotal;
 
     @Column(name = "datahorasolicitacao")
-    private Date datahorasolicitacao;
+    private LocalDateTime datahorasolicitacao;
 
     @Column(name = "tempototalpreparo")
     private Time tempototalpreparo;
@@ -50,11 +51,19 @@ public class PedidoEntity {
         }
     }
 
-
-    public void setUsuario(@NotNull Long usuariocodigo) {
+    public BigDecimal calcularValorTotalPedido(List<PedidoItemEntity> itens){
+         return itens.stream()
+                   .map(PedidoItemEntity::calcularPrecoTotalItem)
+                   .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Long getUsuariocodigo() {
-        return this.usuario.getCodigo();
+    @PrePersist
+    public void prePersist() {
+        if (this.datahorasolicitacao == null) {
+            this.datahorasolicitacao = LocalDateTime.now();
+        }
     }
+
+
+
 }

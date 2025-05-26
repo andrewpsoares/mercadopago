@@ -1,26 +1,22 @@
 package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.adapter.driven.entity.FilaPedidosPreparacaoEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoItemEntity;
-import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
-import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
-import faculdade.mercadopago.adapter.driven.repository.PedidoItemRepository;
-import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
-import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
-import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-import faculdade.mercadopago.core.domain.model.Usuario;
-import jakarta.validation.Valid;
+import faculdade.mercadopago.adapter.driven.entity.PedidoItemEntity;
+import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
+import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
+import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
+import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
+import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
+import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PedidoService {
@@ -28,12 +24,15 @@ public class PedidoService {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
 
-    @Autowired
-    private  PedidoItemRepository pedidoItemRepository;
 
     public PedidoEntity alterarPedido(Long codigo, StatusPedidoEnum status) {
         var pedido = pedidoRepository.getReferenceById(codigo);
@@ -42,31 +41,38 @@ public class PedidoService {
         return pedido;
     }
 
-    public Page<ListarPedidoDto> listarPedidos(Pageable pageable, StatusPedidoEnum status){
-        return pedidoRepository.findAllByStatus(pageable, status).map(ListarPedidoDto::new);
+    public Page<ViewPedidoDto> listarPedidos(Pageable pageable, StatusPedidoEnum status){
+        return pedidoRepository.findAllByStatus(pageable, status).map(ViewPedidoDto::new);
     }
 
-    public PedidoEntity criarPedido(CriarPedidoDto dados){
-
+    public PedidoEntity criarPedido(NewPedidoDto dados){
+        //Pedido pré montado
+        var usuario = usuarioRepository.findById(dados.usuariocodigo())
+                .orElseThrow(()-> new RuntimeException("Usuário não encontrado"));
         PedidoEntity pedido = new PedidoEntity();
-        System.out.println(dados);
+        pedido.setUsuario(usuario);
+        pedido.setStatus(StatusPedidoEnum.RECEBIDO);
+        pedido.setDatahorasolicitacao(LocalDateTime.now());
+        pedido.setTempototalpreparo(dados.tempototalpreparo());
+
+        //Cria os itens do pedido
         List<PedidoItemEntity> itens = dados.itens().stream().map(
                 itemDto ->{
                     PedidoItemEntity item = new PedidoItemEntity();
+                    var produto = produtoRepository.findById(itemDto.produtocodigo())
+                            .orElseThrow(()-> new RuntimeException("Produto não encontrado"));
                     item.setPedido(pedido);
-                    item.setProdutoCodigo(itemDto.produtocodigo());
+                    item.setProdutocodigo(produto);
                     item.setQuantidade(itemDto.quantidade());
-                    item.setPrecoUnitario(itemDto.precounitario());
-                    item.setPrecoTotal(itemDto.precototal());
+                    item.setPrecounitario(produto.getPreco());
+                    item.setPrecototal(item.calcularPrecoTotalItem());
                     return  item;
                 }).toList();
 
-        pedido.setUsuario(dados.usuariocodigo());
-        pedido.setStatus(StatusPedidoEnum.RECEBIDO);
-        pedido.setValortotal(dados.valortotal());
-        pedido.setDatahorasolicitacao(dados.datahorasolicitacao());
-        pedido.setTempototalpreparo(dados.tempototalpreparo());
+        //Set valor total e itens
+        pedido.setValortotal(pedido.calcularValorTotalPedido(itens));
         pedido.setItens(itens);
+
         return  pedidoRepository.save(pedido);
     }
 
