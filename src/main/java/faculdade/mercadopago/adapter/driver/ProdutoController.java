@@ -22,24 +22,28 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @GetMapping("/buscar/{codigoProduto}")
+    // ✅ Buscar produto por código
+    @GetMapping("/buscar/produto/{codigoProduto}")
     public ResponseEntity<ApiResponse<ViewProdutoDto>> buscarPorCodigoProduto(@PathVariable long codigoProduto) throws Exception {
-         var response = produtoService.buscarProduto(codigoProduto);
+        var response = produtoService.buscarProduto(codigoProduto);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/buscar/categoria/{categoria}")
+    // ✅ Buscar categoria por código
+    @GetMapping("/buscar/categoria/{codigoCategoria}")
     public ResponseEntity<ApiResponse<ViewCategoriaDto>> buscarPorCategoriaProduto(@PathVariable long codigoCategoria) {
         var response = produtoService.buscarCategoria(codigoCategoria);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/buscar/{categoria}")
-    public ResponseEntity<ApiResponse<ViewProdutoDto>> buscarProdutosPorCategoriaProduto(@PathVariable long codigoCategoria) {
+    // ✅ Buscar produtos por categoria
+    @GetMapping("/buscar/categoria/{codigoCategoria}/produtos")
+    public ResponseEntity<ApiResponse<ViewCategoriaDto>> buscarProdutosPorCategoriaProduto(@PathVariable long codigoCategoria) {
         var response = produtoService.buscarProdutosPorCategoria(codigoCategoria);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    // ✅ Adicionar produto
     @PostMapping
     @Transactional
     public ResponseEntity<ApiResponse<ViewProdutoDto>> adicionar(@RequestBody NewProdutoDto produto) {
@@ -47,13 +51,15 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    // ✅ Remover produto
     @DeleteMapping("/{codigo}")
     @Transactional
-    public ResponseEntity removerProduto(@PathVariable Long codigo) throws Exception {
+    public ResponseEntity<Void> removerProduto(@PathVariable Long codigo) throws Exception {
         produtoService.removerProduto(codigo);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    // ✅ Atualizar produto
     @PutMapping("/{codigo}")
     @Transactional
     public ResponseEntity<ApiResponse<ViewProdutoDto>> atualizar(@PathVariable Long codigo, @RequestBody ViewProdutoDto produto) throws Exception {
