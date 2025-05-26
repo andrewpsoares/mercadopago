@@ -1,11 +1,11 @@
 package faculdade.mercadopago.adapter.driver;
 
-import faculdade.mercadopago.adapter.driven.entity.EntregaEntity;
-import faculdade.mercadopago.adapter.driven.repository.EntregaRepository;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
+import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
 import faculdade.mercadopago.core.services.EntregaService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,11 @@ public class EntregaController {
     @Autowired
     private EntregaService entregaService;
 
+    @Operation(summary = "Finalizar Pedido", description = "Rota responsável por finalizar o pedido e retirar da fila")
     @PostMapping
     @Transactional
-    public ResponseEntity finalizarPedido(@RequestBody @Valid EntregaDto dados){
-        var pedidoFinalizado =  entregaService.entregarPedido(dados);
-        return ResponseEntity.status(HttpStatus.OK).body(pedidoFinalizado);
+    public ResponseEntity<ApiResponse<ViewEntregaDto>> finalizarPedido(@RequestBody EntregaDto entregaDto) {
+        var response =  entregaService.entregarPedido(entregaDto);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

@@ -1,7 +1,9 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Table(name = "filapedidospreparacao")
 @Data

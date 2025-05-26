@@ -1,16 +1,16 @@
 package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.adapter.driven.entity.EntregaEntity;
-import faculdade.mercadopago.adapter.driven.entity.FilaPedidosPreparacaoEntity;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.adapter.driven.repository.EntregaRepository;
 import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
+import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
+import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,16 +23,29 @@ public class EntregaService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
+    private PedidoService pedidoService;
 
-    public EntregaEntity entregarPedido(EntregaDto dados){
-        var pedido = pedidoRepository.getReferenceById(dados.pedidocodigo());
-        pedido.alterarStatusPedido(StatusPedidoEnum.FINALIZADO);
+
+    public ApiResponse<ViewEntregaDto> entregarPedido(EntregaDto entregaDto){
+        PedidoEntity pedido = pedidoRepository.getReferenceById(entregaDto.getCodigo());
+        pedido.setStatus(entregaDto.getStatus());
         pedidoRepository.save(pedido);
 
         EntregaEntity entrega = new EntregaEntity();
         entrega.setPedidoCodigo(pedido);
-        entrega.setDataHoraEntrega(dados.datahoraentrega());
-        return entregaRepository.save(entrega);
+        entregaRepository.save(entrega);
+
+        pedidoService.removerPedidoDaFila(entregaDto.getCodigo());
+
+        var viewEntregaDto = ViewEntregaDto.builder()
+                        .DataHoraEntrega(entrega.getDataHoraEntrega())
+                        .codigo(entrega.getCodigo())
+                        .status(entregaDto.getStatus())
+                        .build();
+
+        var apiResponse = new ApiResponse<ViewEntregaDto>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewEntregaDto);
+        return apiResponse;
     }
 }

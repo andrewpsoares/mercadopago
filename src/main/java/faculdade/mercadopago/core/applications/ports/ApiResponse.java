@@ -2,8 +2,8 @@ package faculdade.mercadopago.core.applications.ports;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jdk.jfr.DataAmount;
 import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 

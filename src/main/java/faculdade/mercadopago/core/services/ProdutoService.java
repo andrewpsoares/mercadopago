@@ -1,20 +1,15 @@
 package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.adapter.driven.entity.CategoriaEntity;
-import faculdade.mercadopago.adapter.driven.entity.EntregaEntity;
-import faculdade.mercadopago.adapter.driven.entity.ProdutoEntity;
 import faculdade.mercadopago.adapter.driven.repository.CategoriaRepository;
 import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewProdutoDto;
 import faculdade.mercadopago.core.domain.dto.ViewCategoriaDto;
 import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
-import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.domain.mapper.ProdutoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProdutoService {

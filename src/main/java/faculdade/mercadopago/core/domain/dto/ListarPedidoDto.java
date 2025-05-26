@@ -1,7 +1,7 @@
 package faculdade.mercadopago.core.domain.dto;
 
-import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
+import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 
 import java.math.BigDecimal;
 import java.sql.Time;

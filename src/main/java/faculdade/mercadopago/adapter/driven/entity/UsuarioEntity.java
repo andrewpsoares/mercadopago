@@ -10,7 +10,7 @@ public class UsuarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long codigo;
+    private long codigo;
 
     private String nome;
     private String cpf;
