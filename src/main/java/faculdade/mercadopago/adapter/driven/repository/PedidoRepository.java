@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 
 public interface PedidoRepository extends JpaRepository<PedidoEntity,Long> {
-    Page<PedidoEntity> findAllByStatus(Pageable pageable, StatusPedidoEnum status);
+    List<PedidoEntity> findAllByStatus(StatusPedidoEnum status);
 }

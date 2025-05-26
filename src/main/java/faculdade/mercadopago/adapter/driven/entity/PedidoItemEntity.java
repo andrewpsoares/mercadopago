@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalTime;
 
 @Table(name = "pedidoitem")
 @Getter
@@ -43,5 +46,17 @@ public class PedidoItemEntity {
         } else {
             return this.precototal = BigDecimal.ZERO;
         }
+    }
+
+    public Time calcularTempoTotalItem() {
+        LocalTime tempoUnitario = produtocodigo.getTempopreparo().toLocalTime();
+        Duration duracaoUnitario = Duration.ofHours(tempoUnitario.getHour())
+                .plusMinutes(tempoUnitario.getMinute())
+                .plusSeconds(tempoUnitario.getSecond());
+
+        Duration duracaoTotal = duracaoUnitario.multipliedBy(quantidade);
+        LocalTime tempoTotal = LocalTime.MIDNIGHT.plus(duracaoTotal);
+
+        return Time.valueOf(tempoTotal);
     }
 }

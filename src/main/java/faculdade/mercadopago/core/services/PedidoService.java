@@ -7,9 +7,12 @@ import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepo
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
 import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,8 +44,12 @@ public class PedidoService {
         return pedido;
     }
 
-    public Page<ViewPedidoDto> listarPedidos(Pageable pageable, StatusPedidoEnum status){
-        return pedidoRepository.findAllByStatus(pageable, status).map(ViewPedidoDto::new);
+    public ApiResponse<List<ViewPedidoDto>> listarPedidos(StatusPedidoEnum status){
+        var listaPedidos = pedidoRepository.findAllByStatus(status);
+        var listViewPedidoDto = listaPedidos.stream()
+                .map(PedidoMapper::entityToDto)
+                .toList();
+        return ApiResponse.ok(listViewPedidoDto);
     }
 
     public PedidoEntity criarPedido(NewPedidoDto dados){
@@ -53,7 +60,6 @@ public class PedidoService {
         pedido.setUsuario(usuario);
         pedido.setStatus(StatusPedidoEnum.RECEBIDO);
         pedido.setDatahorasolicitacao(LocalDateTime.now());
-        pedido.setTempototalpreparo(dados.tempototalpreparo());
 
         //Cria os itens do pedido
         List<PedidoItemEntity> itens = dados.itens().stream().map(
@@ -66,10 +72,11 @@ public class PedidoService {
                     item.setQuantidade(itemDto.quantidade());
                     item.setPrecounitario(produto.getPreco());
                     item.setPrecototal(item.calcularPrecoTotalItem());
-                    return  item;
+                    return item;
                 }).toList();
 
         //Set valor total e itens
+        pedido.setTempototalpreparo(pedido.calcularTempoTotalDePreparo(itens));
         pedido.setValortotal(pedido.calcularValorTotalPedido(itens));
         pedido.setItens(itens);
 

@@ -1,6 +1,7 @@
 package faculdade.mercadopago.adapter.driver;
 
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
@@ -10,12 +11,11 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,9 +28,9 @@ public class PedidoController {
 
     @GetMapping
     @Operation(summary = "Listar pedidos por status", description = "Lista um pedido a partir de um dos status pré definidos")
-    public ResponseEntity<Page<ViewPedidoDto>> listarPedidos(Pageable pageable, @RequestParam StatusPedidoEnum status){
-        var lista = pedidoService.listarPedidos(pageable, status);
-        return ResponseEntity.ok(lista);
+    public ResponseEntity<ApiResponse<List<ViewPedidoDto>>> listarPedidos(@RequestParam StatusPedidoEnum status){
+        var lista = pedidoService.listarPedidos(status);
+        return ResponseEntity.status(HttpStatus.OK).body(lista);
     }
 
     @PutMapping("/{codigo}")

@@ -12,9 +12,6 @@ public record NewPedidoDto(
         @NotNull
         Long usuariocodigo,
 
-        @NotNull
-        Time tempototalpreparo,
-
         @Size(min = 1)
         @NotNull
         @Valid
