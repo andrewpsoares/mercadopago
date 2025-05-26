@@ -87,12 +87,13 @@ public class ProdutoService {
         return apiResponse;
     }
 
-//    public ApiResponse<List<ViewProdutoDto>> buscarProdutosPorCategoria(long codigoCategoria) {
-//        var listaProdutos = produtoRepository.findByCategoriaCodigo(codigoCategoria);
-//
-//        var apiResponse = new ApiResponse<List<ViewCategoriaDto>>();
-//        apiResponse.setSuccess(true);
-//        apiResponse.setData(null);
-//        return apiResponse;
-//    }
+    public ApiResponse<List<ViewProdutoDto>> buscarProdutosPorCategoria(long codigoCategoria) {
+        var listaProdutos = produtoRepository.findByCategoriaCodigo(codigoCategoria);
+
+            var listViewProdutoDto = listaProdutos.stream()
+                    .map(produtoMapper::entityToDto)
+                    .toList();
+
+        return ApiResponse.ok(listViewProdutoDto);
+    }
 }

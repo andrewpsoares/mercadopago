@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/produtos")
 public class ProdutoController {
@@ -33,12 +35,12 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-//    @Operation(summary = "Busca lista de produtos do codigo de categoria", description = "Retorna lista de produtos especificos do codigo categoria enviado")
-//    @GetMapping("/buscar/categoria/{codigoCategoria}/produtos")
-//    public ResponseEntity<ApiResponse<ViewCategoriaDto>> buscarProdutosPorCategoriaProduto(@PathVariable long codigoCategoria) {
-//        var response = produtoService.buscarProdutosPorCategoria(codigoCategoria);
-//        return ResponseEntity.status(HttpStatus.OK).body(response);
-//    }
+    @Operation(summary = "Busca lista de produtos do codigo de categoria", description = "Retorna lista de produtos especificos do codigo categoria enviado")
+    @GetMapping("/buscar/categoria/{codigoCategoria}/produtos")
+    public ResponseEntity<ApiResponse<List<ViewProdutoDto>>> buscarProdutosPorCategoriaProduto(@PathVariable long codigoCategoria) {
+        var response = produtoService.buscarProdutosPorCategoria(codigoCategoria);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
     @Operation(summary = "Cadastrar novo produto", description = "Inclusão de novo produto no banco de dados")
     @PostMapping

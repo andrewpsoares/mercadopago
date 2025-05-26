@@ -27,6 +27,16 @@ public class ApiResponse<T> {
         this.Errors.add(obj);
     }
 
+    public static <T> ApiResponse<T> ok(T data) {
+        return new ApiResponse<>(true, data);
+    }
+
+    public static <T> ApiResponse<T> error(String error, String message) {
+        ApiResponse<T> response = new ApiResponse<>(false, null);
+        response.addError(error, message);
+        return response;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @Data
     public static class Err {
