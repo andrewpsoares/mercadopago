@@ -11,6 +11,8 @@ import faculdade.mercadopago.core.domain.mapper.ProdutoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProdutoService {
     @Autowired
@@ -85,12 +87,12 @@ public class ProdutoService {
         return apiResponse;
     }
 
-    public ApiResponse<ViewCategoriaDto> buscarProdutosPorCategoria(long codigoCategoria) {
-        var listaProdutos = produtoRepository.findByCategoriaCodigo(codigoCategoria);
-
-        var apiResponse = new ApiResponse<ViewCategoriaDto>();
-        apiResponse.setSuccess(true);
-        apiResponse.setData(null);
-        return apiResponse;
-    }
+//    public ApiResponse<List<ViewProdutoDto>> buscarProdutosPorCategoria(long codigoCategoria) {
+//        var listaProdutos = produtoRepository.findByCategoriaCodigo(codigoCategoria);
+//
+//        var apiResponse = new ApiResponse<List<ViewCategoriaDto>>();
+//        apiResponse.setSuccess(true);
+//        apiResponse.setData(null);
+//        return apiResponse;
+//    }
 }
