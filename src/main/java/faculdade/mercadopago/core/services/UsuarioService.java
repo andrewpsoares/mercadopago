@@ -2,7 +2,7 @@ package faculdade.mercadopago.core.services;
 
 import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
 import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
-import faculdade.mercadopago.core.applications.ports.BadRequestException;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.model.Usuario;
 import faculdade.mercadopago.core.domain.model.UsuarioRequest;
 import lombok.Builder;
@@ -14,23 +14,24 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public Usuario buscarUsuarioCpf(String cpf) {
+    public ApiResponse<Usuario> buscarUsuarioCpf(String cpf) throws Exception {
         UsuarioEntity usuarioEntity = usuarioRepository.findByCpf(cpf);
 
-        if (usuarioEntity == null) {
-            throw new BadRequestException.UsuarioNaoEncontradoException("Usuário não encontrado com CPF: " + cpf);
-        }
+        var usuario = Usuario.builder()
+                    .codigo(usuarioEntity.getCodigo())
+                    .nome(usuarioEntity.getNome())
+                    .cpf(usuarioEntity.getCpf())
+                    .email(usuarioEntity.getEmail())
+                    .build();
 
-        return Usuario.builder()
-                .codigo(usuarioEntity.getCodigo())
-                .nome(usuarioEntity.getNome())
-                .cpf(usuarioEntity.getCpf())
-                .email(usuarioEntity.getEmail())
-                .build();
+        var apiResponse = new ApiResponse<Usuario>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(usuario);
+        return apiResponse;
     }
 
 
-    public Usuario processarUsuario(UsuarioRequest request) {
+    public ApiResponse<Usuario> processarUsuario(UsuarioRequest request) throws Exception {
         UsuarioEntity usuario = new UsuarioEntity();
 
         if (request.getIdentificar_usuario()) {
@@ -43,14 +44,19 @@ public class UsuarioService {
             usuario.setEmail("padrao@email.com");
         }
 
-        UsuarioEntity usuarioEntity = usuarioRepository.save(usuario);
+        var usuarioEntity = usuarioRepository.save(usuario);
 
-        return Usuario.builder()
-                .codigo(usuarioEntity.getCodigo())
-                .nome(usuarioEntity.getNome())
-                .cpf(usuarioEntity.getCpf())
-                .email(usuarioEntity.getEmail())
-                .build();
+        var response = Usuario.builder()
+                    .codigo(usuarioEntity.getCodigo())
+                     .nome(usuarioEntity.getNome())
+                    .cpf(usuarioEntity.getCpf())
+                    .email(usuarioEntity.getEmail())
+                    .build();
+
+        var apiResponse = new ApiResponse<Usuario>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(response);
+        return apiResponse;
     }
 
 

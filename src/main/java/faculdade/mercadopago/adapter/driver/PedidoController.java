@@ -1,10 +1,5 @@
 package faculdade.mercadopago.adapter.driver;
 
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.core.domain.dto.AlterarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.services.PedidoService;
@@ -38,12 +33,12 @@ public class PedidoController {
         return ResponseEntity.ok(new ListarPedidoDto(pedido));
     }
 
-    @PostMapping
-    @Transactional
-    public ResponseEntity incluirPedido(@RequestBody @Valid CriarPedidoDto dados){
-        var pedido = pedidoService.criarPedido(dados);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
-    }
+//    @PostMapping
+//    @Transactional
+//    public ResponseEntity incluirPedido(@RequestBody @Valid CriarPedidoDto dados){
+//        var pedido = pedidoService.criarPedido(dados);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+//    }
 
     @DeleteMapping("/{codigoPedido}")
     @Transactional
