@@ -52,6 +52,7 @@ public class EntregaServiceTest {
 
         PedidoEntity pedido = new PedidoEntity();
         pedido.setCodigo(codigoPedido);
+        pedido.setStatus(status);
 
         EntregaEntity entregaEntity = new EntregaEntity();
         entregaEntity.setCodigo(10);
@@ -59,7 +60,15 @@ public class EntregaServiceTest {
         entregaEntity.setDataHoraEntrega(dataEntrega);
 
         when(pedidoRepository.getReferenceById(codigoPedido)).thenReturn(pedido);
-        when(entregaRepository.save(any(EntregaEntity.class))).thenReturn(entregaEntity);
+        when(pedidoRepository.save(pedido)).thenReturn(pedido);
+        when(entregaRepository.save(any(EntregaEntity.class)))
+                .thenAnswer(invocation -> {
+                    EntregaEntity entity = invocation.getArgument(0);
+                    entity.setCodigo(10);
+                    entity.setDataHoraEntrega(new Date());
+                    return entity;
+                });
+
 
         ApiResponse<ViewEntregaDto> response = entregaService.entregarPedido(entregaDto);
 
