@@ -1,21 +1,17 @@
 package faculdade.mercadopago.core.domain.dto;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import lombok.Data;
 
-import java.sql.Time;
 import java.util.List;
 
-public record NewPedidoDto(
+@Data
+public class NewPedidoDto {
 
-        @NotNull
-        Long usuariocodigo,
+    private long usuario;
+    private List<NewPedidoItemDto>itens;
 
-        @Size(min = 1)
-        @NotNull
-        @Valid
-        List<NewPedidoItemDto> itens
-) {
+
 }
+
+
 

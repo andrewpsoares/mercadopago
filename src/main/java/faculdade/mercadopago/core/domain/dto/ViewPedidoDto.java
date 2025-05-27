@@ -1,29 +1,24 @@
 package faculdade.mercadopago.core.domain.dto;
 
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.time.LocalDateTime;
 
-public record ViewPedidoDto(
-        Long codigo,
-        Long usuariocodigo,
-        StatusPedidoEnum status,
-        BigDecimal valortotal,
-        LocalDateTime datahorasolicitacao,
-        Time tempototalpreparo
-) {
-    public ViewPedidoDto(PedidoEntity dados){
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class ViewPedidoDto {
 
-        this(
-                dados.getCodigo(),
-                dados.getUsuario().getCodigo(),
-                dados.getStatus(),
-                dados.getValortotal(),
-                dados.getDatahorasolicitacao(),
-                new Time(dados.getTempototalpreparo().getTime())
-        );
-    }
+    private long usuario;
+    private StatusPedidoEnum status;
+    private BigDecimal valorTotal;
+    private LocalDateTime dataHoraSolicitacao;
+    private Time tempoTotalPreparo;
 }

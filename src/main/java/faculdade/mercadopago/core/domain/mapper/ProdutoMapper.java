@@ -1,7 +1,6 @@
 package faculdade.mercadopago.core.domain.mapper;
 
 import faculdade.mercadopago.adapter.driven.entity.CategoriaEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.adapter.driven.entity.ProdutoEntity;
 import faculdade.mercadopago.core.domain.dto.NewProdutoDto;
 import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
@@ -12,7 +11,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface ProdutoMapper {
     @Mapping(source = "categoria.codigo", target = "categoria")
-    ViewProdutoDto entityToDto(PedidoEntity produtoEntity);
+    ViewProdutoDto entityToDto(ProdutoEntity produtoEntity);
 
     @Mapping(source = "categoria", target = "categoria")
     ProdutoEntity newDtoToEntity(NewProdutoDto newProdutoDto);

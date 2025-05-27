@@ -1,6 +1,5 @@
 package faculdade.mercadopago.adapter.driver;
 
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
@@ -9,14 +8,12 @@ import faculdade.mercadopago.core.services.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/pedido")
@@ -51,7 +48,7 @@ public class PedidoController {
 
     @DeleteMapping("/{codigoPedido}")
     @Transactional
-    public ResponseEntity removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
+    public ResponseEntity<Void> removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
         pedidoService.removerPedidoDaFila(codigoPedido);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

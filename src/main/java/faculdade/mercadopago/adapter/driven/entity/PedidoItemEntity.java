@@ -2,9 +2,7 @@ package faculdade.mercadopago.adapter.driven.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -12,10 +10,12 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 @Table(name = "pedidoitem")
-@Getter
-@Setter
+@Data
+@Builder
 @Entity
 @EqualsAndHashCode(of = "Codigo")
+@NoArgsConstructor
+@AllArgsConstructor
 public class PedidoItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +39,7 @@ public class PedidoItemEntity {
 
     @Column(name = "precototal")
     private BigDecimal precototal;
+
 
     public BigDecimal calcularPrecoTotalItem() {
         if (this.produtocodigo != null && this.produtocodigo.getPreco() != null && quantidade > 0) {

@@ -1,18 +1,21 @@
 package faculdade.mercadopago.core.services;
 
-import faculdade.mercadopago.adapter.driven.entity.FilaPedidosPreparacaoEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoItemEntity;
+import faculdade.mercadopago.adapter.driven.entity.*;
 import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
+import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
+import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
+import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewFilaDto;
+import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
+import faculdade.mercadopago.core.domain.mapper.ProdutoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,15 +34,21 @@ public class PedidoService {
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
     @Autowired
-    private ProdutoMapper produtoMapper;
+    private PedidoMapper pedidoMapper;
 
 
     public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {
         var pedidoEntity = pedidoRepository.getReferenceById(codigo);
         pedidoEntity.setStatus(status);
-        pedidoRepository.save(pedidoEntity);
+        var pedido = pedidoRepository.save(pedidoEntity);
 
-        var viewPedidoDto = produtoMapper.entityToDto(pedidoEntity);
+        var viewPedidoDto = ViewPedidoDto.builder()
+                            .usuario(pedido.getUsuario().getCodigo())
+                            .status(pedido.getStatus())
+                            .valorTotal(pedido.getValortotal())
+                            .tempoTotalPreparo(pedido.getTempototalpreparo())
+                            .dataHoraSolicitacao(pedido.getDatahorasolicitacao())
+                            .build();
 
         var apiResponse = new ApiResponse<ViewPedidoDto>();
         apiResponse.setSuccess(true);
@@ -47,49 +56,86 @@ public class PedidoService {
         return apiResponse;
     }
 
+    public PedidoService(PedidoRepository pedidoRepository, PedidoMapper pedidoMapper) {
+        this.pedidoRepository = pedidoRepository;
+        this.pedidoMapper = pedidoMapper;
+    }
+
     public ApiResponse<List<ViewPedidoDto>> listarPedidos(StatusPedidoEnum status){
         var listaPedidos = pedidoRepository.findAllByStatus(status);
         var listViewPedidoDto = listaPedidos.stream()
-                .map(PedidoMapper::entityToDto)
+                .map(pedidoMapper::entityToDto)
                 .toList();
         return ApiResponse.ok(listViewPedidoDto);
     }
 
-    public ApiResponse<ViewPedidoDto> criarPedido(NewPedidoDto dados){
-        var usuario = usuarioRepository.findById(dados.usuariocodigo())
-                .orElseThrow(()-> new RuntimeException("Usuário não encontrado"));
+    public ApiResponse<ViewPedidoDto> criarPedido(NewPedidoDto dados) {
         PedidoEntity pedido = new PedidoEntity();
+
+        // Identifica Usuário
+        UsuarioEntity usuario = usuarioRepository.findById(dados.getUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: código " + dados.getUsuario()));
         pedido.setUsuario(usuario);
+
+        // Adiciona Status e Data/Hora
         pedido.setStatus(StatusPedidoEnum.RECEBIDO);
         pedido.setDatahorasolicitacao(LocalDateTime.now());
 
-        //Cria os itens do pedido
-        List<PedidoItemEntity> itens = dados.itens().stream().map(
-                itemDto ->{
-                    PedidoItemEntity item = new PedidoItemEntity();
-                    var produto = produtoRepository.findById(itemDto.produtocodigo())
-                            .orElseThrow(()-> new RuntimeException("Produto não encontrado"));
-                    item.setPedido(pedido);
-                    item.setProdutocodigo(produto);
-                    item.setQuantidade(itemDto.quantidade());
-                    item.setPrecounitario(produto.getPreco());
-                    item.setPrecototal(item.calcularPrecoTotalItem());
-                    return item;
-                }).toList();
+        // Cria os itens do pedido
+        List<PedidoItemEntity> itens = dados.getItens().stream()
+                .map(itemDto -> {
+                    ProdutoEntity produto = produtoRepository.findById(itemDto.getProdutocodigo())
+                            .orElseThrow(() -> new RuntimeException("Produto não encontrado: código " + itemDto.getProdutocodigo()));
 
-        //Set valor total e itens
+                    return PedidoItemEntity.builder()
+                            .pedido(pedido)
+                            .produtocodigo(produto)
+                            .quantidade(itemDto.getQuantidade())
+                            .precounitario(produto.getPreco())
+                            .precototal(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.getQuantidade())))
+                            .build();
+                })
+                .toList();
+
+        // Calcula e define os valores do pedido
         pedido.setTempototalpreparo(pedido.calcularTempoTotalDePreparo(itens));
         pedido.setValortotal(pedido.calcularValorTotalPedido(itens));
         pedido.setItens(itens);
 
-        return  pedidoRepository.save(pedido);
+        // Persiste o pedido
+        PedidoEntity pedidoSalvo = pedidoRepository.save(pedido);
+
+        // Monta DTO de resposta
+        ViewPedidoDto viewPedidoDto = ViewPedidoDto.builder()
+                .usuario(pedidoSalvo.getUsuario().getCodigo())
+                .valorTotal(pedidoSalvo.getValortotal())
+                .dataHoraSolicitacao(pedidoSalvo.getDatahorasolicitacao())
+                .tempoTotalPreparo(pedidoSalvo.getTempototalpreparo())
+                .build();
+
+        ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewPedidoDto);
+
+        return apiResponse;
     }
 
-    public FilaPedidosPreparacaoEntity adicionarPedidoNaFila(Long codigo){
+
+    public ApiResponse<ViewFilaDto> adicionarPedidoNaFila(Long codigo){
         var pedido = pedidoRepository.getReferenceById(codigo);
         FilaPedidosPreparacaoEntity pedidoFila = new FilaPedidosPreparacaoEntity();
         pedidoFila.setPedidocodigo(pedido);
-        return filaPedidosPreparacaoRepository.save(pedidoFila);
+        var pedidoIncluso = filaPedidosPreparacaoRepository.save(pedidoFila);
+
+        var viewFilaDto = ViewFilaDto.builder()
+                .codigoPedido(pedido.getCodigo())
+                .status(pedidoIncluso.getPedidocodigo().getStatus())
+                .build();
+
+        var apiResponse = new ApiResponse<ViewFilaDto>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewFilaDto);
+        return apiResponse;
     }
 
     public void removerPedidoDaFila(Long codigo){
