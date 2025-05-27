@@ -6,30 +6,23 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "entregas")
 @Getter
 @Setter
-@EqualsAndHashCode(of = "codigo")
+@EqualsAndHashCode(of = "Codigo")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EntregaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long codigo;
+    private long Codigo;
 
     @OneToOne
     @JoinColumn(name = "pedidocodigo")
-    private PedidoEntity pedidocodigo;
+    private PedidoEntity PedidoCodigo;
 
     @Column(name = "datahoraentrega")
-    private LocalDateTime datahoraentrega;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.datahoraentrega == null) {
-            this.datahoraentrega = LocalDateTime.now();
-        }
-    }
+    private Date DataHoraEntrega;
 }

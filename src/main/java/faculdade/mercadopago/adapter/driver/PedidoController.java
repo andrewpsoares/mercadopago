@@ -51,8 +51,7 @@ public class PedidoController {
 
     @DeleteMapping("/{codigoPedido}")
     @Transactional
-    @Operation(summary = "Remover pedido da fila", description = "Remove um pedido da fila de preparo com base no código do item na fila")
-    public ResponseEntity<Void> removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
+    public ResponseEntity removerPedidoDaFilaDePreparo(@PathVariable Long codigoPedido){
         pedidoService.removerPedidoDaFila(codigoPedido);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }

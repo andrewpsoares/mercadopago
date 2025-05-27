@@ -2,19 +2,22 @@ package faculdade.mercadopago.core.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faculdade.mercadopago.AppConstants;
+import faculdade.mercadopago.adapter.driven.entity.PagamentoEntity;
+import faculdade.mercadopago.adapter.driven.repository.PaymentRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
-import faculdade.mercadopago.adapter.driven.repository.PaymentRepository;
-import faculdade.mercadopago.adapter.driven.entity.PagamentoEntity;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
-import faculdade.mercadopago.core.domain.model.*;
+import faculdade.mercadopago.core.domain.model.PixPaymentResponse;
+import faculdade.mercadopago.core.domain.model.QrOrderPagamentoResponse;
+import faculdade.mercadopago.core.domain.model.QrOrderRequest;
+import faculdade.mercadopago.core.domain.model.QrOrderResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PagamentoService {
