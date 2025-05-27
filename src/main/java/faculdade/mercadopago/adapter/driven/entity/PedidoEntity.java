@@ -36,13 +36,13 @@ public class PedidoEntity {
     private StatusPedidoEnum status;
 
     @Column(name = "valortotal")
-    private BigDecimal valortotal;
+    private BigDecimal valorTotal;
 
     @Column(name = "datahorasolicitacao")
-    private LocalDateTime datahorasolicitacao;
+    private LocalDateTime dataHoraSolicitacao;
 
     @Column(name = "tempototalpreparo")
-    private Time tempototalpreparo;
+    private Time tempoTotalPreparo;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoItemEntity> itens;
@@ -72,8 +72,8 @@ public class PedidoEntity {
 
     @PrePersist
     public void prePersist() {
-        if (this.datahorasolicitacao == null) {
-            this.datahorasolicitacao = LocalDateTime.now();
+        if (this.dataHoraSolicitacao == null) {
+            this.dataHoraSolicitacao = LocalDateTime.now();
         }
     }
 

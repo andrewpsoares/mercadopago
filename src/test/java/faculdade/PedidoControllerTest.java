@@ -79,7 +79,7 @@
 //        pedidoEntity.setUsuario(usuario);
 //        pedidoEntity.setStatus(StatusPedidoEnum.EM_PREPARO);
 //        pedidoEntity.setValortotal(new BigDecimal("100.00"));
-//        pedidoEntity.setDatahorasolicitacao(LocalDateTime.now());
+//        pedidoEntity.setDataHoraSolicitacao(LocalDateTime.now());
 //        pedidoEntity.setTempototalpreparo(new Time(1800000));
 //
 //        when(pedidoService.alterarPedido(codigoPedido, StatusPedidoEnum.EM_PREPARO))
@@ -105,7 +105,7 @@
 //        pedidoCriado.setCodigo(1L);
 //        pedidoCriado.setStatus(StatusPedidoEnum.RECEBIDO);
 //        pedidoCriado.setValortotal(new BigDecimal("100.00"));
-//        pedidoCriado.setDatahorasolicitacao(LocalDateTime.now());
+//        pedidoCriado.setDataHoraSolicitacao(LocalDateTime.now());
 //        pedidoCriado.setTempototalpreparo(new Time(1800000));
 //
 //        UsuarioEntity usuario = new UsuarioEntity();

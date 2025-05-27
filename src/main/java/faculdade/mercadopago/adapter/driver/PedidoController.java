@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/pedido")
@@ -33,9 +35,20 @@ public class PedidoController {
     @PutMapping("/{codigo}")
     @Transactional
     @Operation(summary = "Alterar o status do pedido", description = "Altera o status de um pedido com base no código do pedido e status desejado")
-    public ResponseEntity<ApiResponse<ViewPedidoDto>> alterarStatusPedido(@PathVariable long codigo, StatusPedidoEnum status){
-        var response = pedidoService.alterarPedido(codigo, status);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+    public ResponseEntity<ApiResponse<ViewPedidoDto>> alterarStatusPedido(@PathVariable long codigo, @RequestBody  Map<String, String> request){
+        System.out.println(request);
+        try {
+            StatusPedidoEnum status = StatusPedidoEnum.valueOf(request.get("status"));
+            var response = pedidoService.alterarPedido(codigo, status);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch (RuntimeException e){
+            ApiResponse apiResponse = new ApiResponse<>();
+            apiResponse.setSuccess(false);
+            apiResponse.setData("{}");
+            apiResponse.addError("Status Inválido", "Status aceitos: "
+            + "( RECEBIDO | EM_PREPARO | PRONTO | FINALIZADO )");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+        }
     }
 
     @PostMapping

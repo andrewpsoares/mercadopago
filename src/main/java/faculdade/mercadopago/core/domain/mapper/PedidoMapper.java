@@ -13,6 +13,7 @@ public interface PedidoMapper {
 
     @Mapping(source = "usuario", target = "usuario")
     @Mapping(source = "status", target = "status")
+    @Mapping(source = "codigo", target = "pedido")
     ViewPedidoDto entityToDto(PedidoEntity pedidoEntity);
 
     default long map(UsuarioEntity usuarioEntity) {

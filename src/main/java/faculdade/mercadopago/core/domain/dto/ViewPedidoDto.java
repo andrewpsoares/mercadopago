@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ViewPedidoDto {
-
+    private long pedido;
     private long usuario;
     private StatusPedidoEnum status;
     private BigDecimal valorTotal;

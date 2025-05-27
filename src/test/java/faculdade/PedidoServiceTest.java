@@ -122,7 +122,7 @@
 //        PedidoEntity pedido = new PedidoEntity();
 //        pedido.setUsuario(usuario);
 //        pedido.setStatus(StatusPedidoEnum.RECEBIDO);
-//        pedido.setDatahorasolicitacao(LocalDateTime.now());
+//        pedido.setDataHoraSolicitacao(LocalDateTime.now());
 //        pedido.setTempototalpreparo(new Time(1800000));
 //        pedido.setItens(List.of(item));
 //        pedido.setValortotal(new BigDecimal("100.00"));

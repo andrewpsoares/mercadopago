@@ -11,7 +11,6 @@ import faculdade.mercadopago.core.domain.dto.ViewFilaDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
-import faculdade.mercadopago.core.domain.mapper.ProdutoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,14 +41,15 @@ public class PedidoService {
         pedidoEntity.setStatus(status);
         var pedido = pedidoRepository.save(pedidoEntity);
 
+
         var viewPedidoDto = ViewPedidoDto.builder()
+                            .pedido(pedido.getCodigo())
                             .usuario(pedido.getUsuario().getCodigo())
                             .status(pedido.getStatus())
-                            .valorTotal(pedido.getValortotal())
-                            .tempoTotalPreparo(pedido.getTempototalpreparo())
-                            .dataHoraSolicitacao(pedido.getDatahorasolicitacao())
+                            .valorTotal(pedido.getValorTotal())
+                            .tempoTotalPreparo(pedido.getTempoTotalPreparo())
+                            .dataHoraSolicitacao(pedido.getDataHoraSolicitacao())
                             .build();
-
         var apiResponse = new ApiResponse<ViewPedidoDto>();
         apiResponse.setSuccess(true);
         apiResponse.setData(viewPedidoDto);
@@ -79,7 +79,7 @@ public class PedidoService {
 
         // Adiciona Status e Data/Hora
         pedido.setStatus(StatusPedidoEnum.RECEBIDO);
-        pedido.setDatahorasolicitacao(LocalDateTime.now());
+        pedido.setDataHoraSolicitacao(LocalDateTime.now());
 
         // Cria os itens do pedido
         List<PedidoItemEntity> itens = dados.getItens().stream()
@@ -98,8 +98,8 @@ public class PedidoService {
                 .toList();
 
         // Calcula e define os valores do pedido
-        pedido.setTempototalpreparo(pedido.calcularTempoTotalDePreparo(itens));
-        pedido.setValortotal(pedido.calcularValorTotalPedido(itens));
+        pedido.setTempoTotalPreparo(pedido.calcularTempoTotalDePreparo(itens));
+        pedido.setValorTotal(pedido.calcularValorTotalPedido(itens));
         pedido.setItens(itens);
 
         // Persiste o pedido
@@ -107,12 +107,13 @@ public class PedidoService {
 
         // Monta DTO de resposta
         ViewPedidoDto viewPedidoDto = ViewPedidoDto.builder()
+                .pedido(pedidoSalvo.getCodigo())
                 .usuario(pedidoSalvo.getUsuario().getCodigo())
-                .valorTotal(pedidoSalvo.getValortotal())
-                .dataHoraSolicitacao(pedidoSalvo.getDatahorasolicitacao())
-                .tempoTotalPreparo(pedidoSalvo.getTempototalpreparo())
+                .status(pedidoSalvo.getStatus())
+                .valorTotal(pedidoSalvo.getValorTotal())
+                .dataHoraSolicitacao(pedidoSalvo.getDataHoraSolicitacao())
+                .tempoTotalPreparo(pedidoSalvo.getTempoTotalPreparo())
                 .build();
-
         ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess(true);
         apiResponse.setData(viewPedidoDto);
