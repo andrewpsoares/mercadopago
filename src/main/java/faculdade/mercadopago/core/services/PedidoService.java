@@ -9,10 +9,12 @@ import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
 import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewCategoriaDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
+import faculdade.mercadopago.core.domain.mapper.ProdutoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,13 +37,21 @@ public class PedidoService {
 
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
+    @Autowired
+    private ProdutoMapper produtoMapper;
 
 
-    public PedidoEntity alterarPedido(Long codigo, StatusPedidoEnum status) {
-        var pedido = pedidoRepository.getReferenceById(codigo);
-        pedido.alterarStatusPedido(status);
-        pedidoRepository.save(pedido);
-        return pedido;
+    public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {
+        var pedidoEntity = pedidoRepository.getReferenceById(codigo);
+        pedidoEntity.setStatus(status);
+        pedidoRepository.save(pedidoEntity);
+
+        var viewPedidoDto = produtoMapper.entityToDto(pedidoEntity);
+
+        var apiResponse = new ApiResponse<ViewPedidoDto>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewPedidoDto);
+        return apiResponse;
     }
 
     public ApiResponse<List<ViewPedidoDto>> listarPedidos(StatusPedidoEnum status){
@@ -52,8 +62,7 @@ public class PedidoService {
         return ApiResponse.ok(listViewPedidoDto);
     }
 
-    public PedidoEntity criarPedido(NewPedidoDto dados){
-        //Pedido pré montado
+    public ApiResponse<ViewPedidoDto> criarPedido(NewPedidoDto dados){
         var usuario = usuarioRepository.findById(dados.usuariocodigo())
                 .orElseThrow(()-> new RuntimeException("Usuário não encontrado"));
         PedidoEntity pedido = new PedidoEntity();

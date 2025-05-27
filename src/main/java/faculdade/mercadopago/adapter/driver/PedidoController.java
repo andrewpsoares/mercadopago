@@ -36,18 +36,17 @@ public class PedidoController {
     @PutMapping("/{codigo}")
     @Transactional
     @Operation(summary = "Alterar o status do pedido", description = "Altera o status de um pedido com base no código do pedido e status desejado")
-    public ResponseEntity<ViewPedidoDto> alterarStatusPedido(@PathVariable Long codigo, @RequestBody @NotNull Map<String, Object> request){
-        StatusPedidoEnum status = StatusPedidoEnum.valueOf(request.get("status").toString());
-        var pedido = pedidoService.alterarPedido(codigo, status);
-        return ResponseEntity.ok(new ViewPedidoDto(pedido));
+    public ResponseEntity<ApiResponse<ViewPedidoDto>> alterarStatusPedido(@PathVariable long codigo, StatusPedidoEnum status){
+        var response = pedidoService.alterarPedido(codigo, status);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PostMapping
     @Transactional
     @Operation(summary = "Incluir pedido", description = "Registra um pedido no sistema")
-    public ResponseEntity<PedidoEntity> incluirPedido(@RequestBody @Valid NewPedidoDto dados){
-        var pedido = pedidoService.criarPedido(dados);
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+    public ResponseEntity<ApiResponse<ViewPedidoDto>> incluirPedido(@RequestBody @Valid NewPedidoDto dados){
+        var response = pedidoService.criarPedido(dados);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{codigoPedido}")
