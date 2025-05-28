@@ -22,7 +22,7 @@ import java.util.List;
 public class PedidoService {
 
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
 
     @Autowired
     private ProdutoRepository produtoRepository;
@@ -32,8 +32,9 @@ public class PedidoService {
 
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
+
     @Autowired
-    private PedidoMapper pedidoMapper;
+    private final PedidoMapper pedidoMapper;
 
 
     public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {

@@ -3,15 +3,14 @@ package faculdade.mercadopago.core.services;
 import faculdade.mercadopago.adapter.driven.entity.EntregaEntity;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.adapter.driven.repository.EntregaRepository;
-import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
-import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
-import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class EntregaService {
@@ -33,6 +32,7 @@ public class EntregaService {
 
         EntregaEntity entrega = new EntregaEntity();
         entrega.setPedidoCodigo(pedido);
+        entrega.setDataHoraEntrega(new Date());
         entregaRepository.save(entrega);
 
         pedidoService.removerPedidoDaFila(entregaDto.getCodigo());

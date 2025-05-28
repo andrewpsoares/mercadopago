@@ -1,134 +1,127 @@
-//package faculdade;
-//
-//import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-//import faculdade.mercadopago.adapter.driven.entity.UsuarioEntity;
-//import faculdade.mercadopago.adapter.driver.PedidoController;
-//import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
-//import faculdade.mercadopago.core.domain.dto.NewPedidoItemDto;
-//import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
-//import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
-//import faculdade.mercadopago.core.services.PedidoService;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//
-//import java.math.BigDecimal;
-//import java.sql.Time;
-//import java.time.LocalDateTime;
-//import java.util.HashMap;
-//import java.util.List;
-//import java.util.Map;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.verify;
-//import static org.mockito.Mockito.when;
-//
-//class PedidoControllerTest {
-//    @Mock
-//    private PedidoService pedidoService;
-//
-//    @InjectMocks
-//    private PedidoController pedidoController;
-//
-//    @BeforeEach
-//    public void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//
-//    @Test
-//    void testListarPedidosComSucesso() {
-//        Pageable pageable = PageRequest.of(0, 10);
-//        StatusPedidoEnum status = StatusPedidoEnum.RECEBIDO;
-//
-//        ViewPedidoDto pedido1 = new ViewPedidoDto(1L, 10L, status, new BigDecimal("59.90"), LocalDateTime.now(), new Time(1800000));
-//        ViewPedidoDto pedido2 = new ViewPedidoDto(2L, 11L, status, new BigDecimal("89.90"), LocalDateTime.now(), new Time(2400000));
-//
-//        Page<ViewPedidoDto> paginaPedidos = new PageImpl<>(List.of(pedido1, pedido2), pageable, 2);
-//
-//        when(pedidoService.listarPedidos(pageable, status)).thenReturn(paginaPedidos);
-//
-//        ResponseEntity<Page<ViewPedidoDto>> response = pedidoController.listarPedidos(pageable, status);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertNotNull(response.getBody());
-//        assertEquals(2, response.getBody().getContent().size());
-//        assertEquals(1L, response.getBody().getContent().get(0).codigo());
-//        assertEquals(2L, response.getBody().getContent().get(1).codigo());
-//    }
-//
-//    @Test
-//    void testAlterarStatusDoPedidoComSucesso() {
-//        Long codigoPedido = 1L;
-//        Map<String, Object> request = new HashMap<>();
-//        request.put("status", "EM_PREPARO");
-//
-//        PedidoEntity pedidoEntity = new PedidoEntity();
-//        UsuarioEntity usuario = new UsuarioEntity();
-//        usuario.setCodigo(2L);
-//
-//        pedidoEntity.setCodigo(codigoPedido);
-//        pedidoEntity.setUsuario(usuario);
-//        pedidoEntity.setStatus(StatusPedidoEnum.EM_PREPARO);
-//        pedidoEntity.setValortotal(new BigDecimal("100.00"));
-//        pedidoEntity.setDataHoraSolicitacao(LocalDateTime.now());
-//        pedidoEntity.setTempototalpreparo(new Time(1800000));
-//
-//        when(pedidoService.alterarPedido(codigoPedido, StatusPedidoEnum.EM_PREPARO))
-//                .thenReturn(pedidoEntity);
-//
-//        ResponseEntity<ViewPedidoDto> response = pedidoController.alterarStatusPedido(codigoPedido, request);
-//
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertNotNull(response.getBody());
-//        assertEquals(codigoPedido, response.getBody().codigo());
-//        assertEquals(StatusPedidoEnum.EM_PREPARO, response.getBody().status());
-//    }
-//
-//    @Test
-//    void testIncluirPedidoComSucesso() {
-//        NewPedidoItemDto item = new NewPedidoItemDto(1L, 2);
-//        NewPedidoDto newPedidoDto = new NewPedidoDto(
-//                10L,
-//                List.of(item)
-//        );
-//
-//        PedidoEntity pedidoCriado = new PedidoEntity();
-//        pedidoCriado.setCodigo(1L);
-//        pedidoCriado.setStatus(StatusPedidoEnum.RECEBIDO);
-//        pedidoCriado.setValortotal(new BigDecimal("100.00"));
-//        pedidoCriado.setDataHoraSolicitacao(LocalDateTime.now());
-//        pedidoCriado.setTempototalpreparo(new Time(1800000));
-//
-//        UsuarioEntity usuario = new UsuarioEntity();
-//        usuario.setCodigo(10L);
-//        pedidoCriado.setUsuario(usuario);
-//
-//        when(pedidoService.criarPedido(any(NewPedidoDto.class))).thenReturn(pedidoCriado);
-//
-//        ResponseEntity<PedidoEntity> response = pedidoController.incluirPedido(newPedidoDto);
-//
-//        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-//        assertNotNull(response.getBody());
-//        assertEquals(1L, response.getBody().getCodigo());
-//        assertEquals(StatusPedidoEnum.RECEBIDO, response.getBody().getStatus());
-//        assertEquals(10L, response.getBody().getUsuario().getCodigo());
-//    }
-//
-//    @Test
-//    void testRemoverPedidoDaFilaDePreparoComSucesso() {
-//        Long codigoPedido = 1L;
-//        ResponseEntity<Void> response = pedidoController.removerPedidoDaFilaDePreparo(codigoPedido);
-//        verify(pedidoService).removerPedidoDaFila(codigoPedido);
-//        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-//        assertNull(response.getBody());
-//    }
-//}
+package faculdade;
+
+import faculdade.mercadopago.adapter.driver.PedidoController;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
+import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
+import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.services.PedidoService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class PedidoControllerTest {
+    @Mock
+    private PedidoService pedidoService;
+
+    @InjectMocks
+    private PedidoController pedidoController;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testListarPedidosComSucesso() {
+        // Arrange
+        StatusPedidoEnum status = StatusPedidoEnum.RECEBIDO;
+
+        List<ViewPedidoDto> pedidosMock = List.of(
+                new ViewPedidoDto(1L, 10L, StatusPedidoEnum.RECEBIDO, BigDecimal.valueOf(50), LocalDateTime.now(), Time.valueOf("00:10:00")),
+                new ViewPedidoDto(2L, 11L, StatusPedidoEnum.RECEBIDO, BigDecimal.valueOf(80), LocalDateTime.now(), Time.valueOf("00:15:00"))
+        );
+
+        ApiResponse<List<ViewPedidoDto>> apiResponse = ApiResponse.ok(pedidosMock);
+
+        when(pedidoService.listarPedidos(status)).thenReturn(apiResponse);
+
+        // Act
+        ResponseEntity<ApiResponse<List<ViewPedidoDto>>> response = pedidoController.listarPedidos(status);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(2, response.getBody().getData().size());
+        assertEquals(status, response.getBody().getData().get(0).getStatus());
+
+        verify(pedidoService, times(1)).listarPedidos(status);
+    }
+
+    @Test
+    void testAlterarStatusDoPedidoComSucesso() {
+        long codigo = 1L;
+        Map<String, String> request = Map.of("status", "RECEBIDO");
+
+        ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess(true);
+        ViewPedidoDto dto = ViewPedidoDto.builder()
+                .pedido(codigo)
+                .status(StatusPedidoEnum.RECEBIDO)
+                .build();
+        apiResponse.setData(dto);
+
+        when(pedidoService.alterarPedido(codigo, StatusPedidoEnum.RECEBIDO)).thenReturn(apiResponse);
+
+        ResponseEntity<ApiResponse<ViewPedidoDto>> response = pedidoController.alterarStatusPedido(codigo, request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(codigo, response.getBody().getData().getPedido());
+        verify(pedidoService, times(1)).alterarPedido(codigo, StatusPedidoEnum.RECEBIDO);
+    }
+
+    @Test
+    void testIncluirPedidoComSucesso() {
+        NewPedidoDto newPedidoDto = new NewPedidoDto();
+
+        ViewPedidoDto viewPedidoDto = ViewPedidoDto.builder()
+                .pedido(1L)
+                .usuario(10L)
+                .status(StatusPedidoEnum.RECEBIDO)
+                .valorTotal(new BigDecimal("100.00"))
+                .tempoTotalPreparo(null)
+                .dataHoraSolicitacao(LocalDateTime.now())
+                .build();
+
+        ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewPedidoDto);
+
+        when(pedidoService.criarPedido(newPedidoDto)).thenReturn(apiResponse);
+
+        ResponseEntity<ApiResponse<ViewPedidoDto>> response = pedidoController.incluirPedido(newPedidoDto);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isSuccess());
+        assertEquals(viewPedidoDto.getPedido(), response.getBody().getData().getPedido());
+
+        verify(pedidoService, times(1)).criarPedido(newPedidoDto);
+    }
+
+    @Test
+    void testRemoverPedidoDaFilaDePreparoComSucesso() {
+        Long codigoPedido = 1L;
+        ResponseEntity<Void> response = pedidoController.removerPedidoDaFilaDePreparo(codigoPedido);
+        verify(pedidoService).removerPedidoDaFila(codigoPedido);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+}
