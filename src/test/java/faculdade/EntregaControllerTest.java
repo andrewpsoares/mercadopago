@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static faculdade.mercadopago.core.domain.enums.StatusPedidoEnum.FINALIZADO;
@@ -38,7 +39,7 @@ public class EntregaControllerTest {
         entregaDto.setCodigo(1);
         entregaDto.setStatus(StatusPedidoEnum.FINALIZADO);
 
-        ViewEntregaDto viewEntregaDto = new ViewEntregaDto(1L, FINALIZADO, new Date());
+        ViewEntregaDto viewEntregaDto = new ViewEntregaDto(1L, FINALIZADO, LocalDateTime.now());
 
         ApiResponse<ViewEntregaDto> responseMock = new ApiResponse<>();
         responseMock.setSuccess(true);

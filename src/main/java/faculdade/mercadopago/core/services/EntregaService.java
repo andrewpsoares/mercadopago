@@ -10,6 +10,7 @@ import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -32,7 +33,7 @@ public class EntregaService {
 
         EntregaEntity entrega = new EntregaEntity();
         entrega.setPedidoCodigo(pedido);
-        entrega.setDataHoraEntrega(new Date());
+        entrega.setDataHoraEntrega(LocalDateTime.now());
         entregaRepository.save(entrega);
 
         pedidoService.removerPedidoDaFila(entregaDto.getCodigo());

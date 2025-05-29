@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -44,7 +44,7 @@ public class EntregaServiceTest {
     public void testEntregarPedido() {
         long codigoPedido = 10;
         StatusPedidoEnum status = StatusPedidoEnum.FINALIZADO;
-        Date dataEntrega = new Date();
+        LocalDateTime dataEntrega = LocalDateTime.now();
 
         EntregaDto entregaDto = new EntregaDto();
         entregaDto.setCodigo(codigoPedido);
@@ -65,7 +65,7 @@ public class EntregaServiceTest {
                 .thenAnswer(invocation -> {
                     EntregaEntity entity = invocation.getArgument(0);
                     entity.setCodigo(10);
-                    entity.setDataHoraEntrega(new Date());
+                    entity.setDataHoraEntrega(LocalDateTime.now());
                     return entity;
                 });
 

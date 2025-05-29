@@ -16,5 +16,5 @@ import java.util.Date;
 public class ViewEntregaDto {
     private long codigo;
     private StatusPedidoEnum status;
-    private Date DataHoraEntrega;
+    private LocalDateTime DataHoraEntrega;
 }
