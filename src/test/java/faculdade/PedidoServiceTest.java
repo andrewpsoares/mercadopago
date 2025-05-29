@@ -18,12 +18,10 @@ import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
 import faculdade.mercadopago.core.services.PedidoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -34,10 +32,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class PedidoServiceTest {
-    @InjectMocks
-    private PedidoService pedidoService;
 
     @Mock
     private PedidoMapper pedidoMapper;
@@ -53,6 +48,9 @@ class PedidoServiceTest {
 
     @Mock
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
+
+    @InjectMocks
+    private PedidoService pedidoService;
 
     @BeforeEach
     public void setUp() {
@@ -154,6 +152,7 @@ class PedidoServiceTest {
         pedidoSalvo.setTempoTotalPreparo(Time.valueOf("00:18:00"));
 
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+        System.out.println(usuarioId);
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
         when(pedidoRepository.save(Mockito.any(PedidoEntity.class))).thenReturn(pedidoSalvo);
 

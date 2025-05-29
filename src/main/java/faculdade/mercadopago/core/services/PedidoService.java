@@ -22,7 +22,7 @@ import java.util.List;
 public class PedidoService {
 
     @Autowired
-    private final PedidoRepository pedidoRepository;
+    private  PedidoRepository pedidoRepository;
 
     @Autowired
     private ProdutoRepository produtoRepository;
@@ -34,7 +34,7 @@ public class PedidoService {
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
 
     @Autowired
-    private final PedidoMapper pedidoMapper;
+    private PedidoMapper pedidoMapper;
 
 
     public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {
@@ -57,11 +57,6 @@ public class PedidoService {
         return apiResponse;
     }
 
-    public PedidoService(PedidoRepository pedidoRepository, PedidoMapper pedidoMapper) {
-        this.pedidoRepository = pedidoRepository;
-        this.pedidoMapper = pedidoMapper;
-    }
-
     public ApiResponse<List<ViewPedidoDto>> listarPedidos(StatusPedidoEnum status){
         var listaPedidos = pedidoRepository.findAllByStatus(status);
         var listViewPedidoDto = listaPedidos.stream()
@@ -72,7 +67,6 @@ public class PedidoService {
 
     public ApiResponse<ViewPedidoDto> criarPedido(NewPedidoDto dados) {
         PedidoEntity pedido = new PedidoEntity();
-
         // Identifica Usuário
         UsuarioEntity usuario = usuarioRepository.findById(dados.getUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado: código " + dados.getUsuario()));
