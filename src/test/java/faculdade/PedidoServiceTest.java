@@ -14,6 +14,7 @@ import faculdade.mercadopago.core.domain.dto.NewPedidoItemDto;
 import faculdade.mercadopago.core.domain.dto.ViewFilaDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.FilaPedidosPreparacaoMapper;
 import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
 import faculdade.mercadopago.core.services.PedidoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,9 @@ class PedidoServiceTest {
     private PedidoMapper pedidoMapper;
 
     @Mock
+    private FilaPedidosPreparacaoMapper filaPedidosPreparacaoMapper;
+
+    @Mock
     private PedidoRepository pedidoRepository;
 
     @Mock
@@ -52,6 +56,8 @@ class PedidoServiceTest {
     @InjectMocks
     private PedidoService pedidoService;
 
+
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -59,33 +65,37 @@ class PedidoServiceTest {
 
     @Test
     void testAlterarPedidoComSucesso() {
-        long codigoPedido = 1L;
-        StatusPedidoEnum novoStatus = StatusPedidoEnum.RECEBIDO;
+        long codigo = 123L;
+        StatusPedidoEnum novoStatus = StatusPedidoEnum.EM_PREPARO;
 
-        UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setCodigo(10L);
+        PedidoEntity pedidoExistente = new PedidoEntity();
+        pedidoExistente.setCodigo(codigo);
+        pedidoExistente.setStatus(StatusPedidoEnum.RECEBIDO);
 
-        PedidoEntity pedidoEntity = new PedidoEntity();
-        pedidoEntity.setCodigo(codigoPedido);
-        pedidoEntity.setUsuario(usuario);
-        pedidoEntity.setStatus(StatusPedidoEnum.EM_PREPARO);
-        pedidoEntity.setValorTotal(BigDecimal.valueOf(30.50));
-        pedidoEntity.setTempoTotalPreparo(Time.valueOf("00:09:00"));
-        pedidoEntity.setDataHoraSolicitacao(LocalDateTime.now());
+        PedidoEntity pedidoAtualizado = new PedidoEntity();
+        pedidoAtualizado.setCodigo(codigo);
+        pedidoAtualizado.setStatus(novoStatus);
 
-        when(pedidoRepository.getReferenceById(codigoPedido)).thenReturn(pedidoEntity);
-        when(pedidoRepository.save(any(PedidoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        ViewPedidoDto viewPedidoDto = new ViewPedidoDto();
+        viewPedidoDto.setPedido(codigo);
+        viewPedidoDto.setStatus(novoStatus);
 
-        ApiResponse<ViewPedidoDto> response = pedidoService.alterarPedido(codigoPedido, novoStatus);
+        when(pedidoRepository.getReferenceById(codigo)).thenReturn(pedidoExistente);
+        when(pedidoRepository.save(pedidoExistente)).thenReturn(pedidoAtualizado);
+        when(pedidoMapper.entityToDto(pedidoAtualizado)).thenReturn(viewPedidoDto);
 
+        // Act
+        ApiResponse<ViewPedidoDto> response = pedidoService.alterarPedido(codigo, novoStatus);
+
+        // Assert
         assertTrue(response.isSuccess());
         assertNotNull(response.getData());
-        assertEquals(codigoPedido, response.getData().getPedido());
+        assertEquals(codigo, response.getData().getPedido());
         assertEquals(novoStatus, response.getData().getStatus());
-        assertEquals(usuario.getCodigo(), response.getData().getUsuario());
 
-        verify(pedidoRepository).getReferenceById(codigoPedido);
-        verify(pedidoRepository).save(pedidoEntity);
+        verify(pedidoRepository).getReferenceById(codigo);
+        verify(pedidoRepository).save(pedidoExistente);
+        verify(pedidoMapper).entityToDto(pedidoAtualizado);
 
     }
 
@@ -123,17 +133,8 @@ class PedidoServiceTest {
 
     @Test
     void testCriarPedidoComSucesso() {
-        long usuarioId = 1L;
-        long produtoId = 10L;
-        BigDecimal precoProduto = new BigDecimal("10.00");
-
-        UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setCodigo(usuarioId);
-
-        ProdutoEntity produto = new ProdutoEntity();
-        produto.setCodigo(produtoId);
-        produto.setPreco(precoProduto);
-        produto.setTempopreparo(Time.valueOf("00:09:00"));
+        Long usuarioId = 1L;
+        Long produtoId = 10L;
 
         NewPedidoItemDto itemDto = new NewPedidoItemDto();
         itemDto.setProdutocodigo(produtoId);
@@ -143,50 +144,66 @@ class PedidoServiceTest {
         newPedidoDto.setUsuario(usuarioId);
         newPedidoDto.setItens(List.of(itemDto));
 
+        UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setCodigo(usuarioId);
+
+        ProdutoEntity produto = new ProdutoEntity();
+        produto.setCodigo(produtoId);
+        produto.setPreco(new BigDecimal("10.00"));
+        produto.setTempopreparo(Time.valueOf("00:10:00"));
+
         PedidoEntity pedidoSalvo = new PedidoEntity();
         pedidoSalvo.setCodigo(100L);
-        pedidoSalvo.setUsuario(usuario);
-        pedidoSalvo.setStatus(StatusPedidoEnum.RECEBIDO);
-        pedidoSalvo.setValorTotal(precoProduto.multiply(BigDecimal.valueOf(2)));
-        pedidoSalvo.setDataHoraSolicitacao(LocalDateTime.now());
-        pedidoSalvo.setTempoTotalPreparo(Time.valueOf("00:18:00"));
 
+        ViewPedidoDto viewPedidoDto = new ViewPedidoDto();
+        viewPedidoDto.setPedido(100L);
+
+        // Mocks
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
-        System.out.println(usuarioId);
         when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
-        when(pedidoRepository.save(Mockito.any(PedidoEntity.class))).thenReturn(pedidoSalvo);
+        when(pedidoRepository.save(any(PedidoEntity.class))).thenReturn(pedidoSalvo);
+        when(pedidoMapper.entityToDto(pedidoSalvo)).thenReturn(viewPedidoDto);
 
         ApiResponse<ViewPedidoDto> response = pedidoService.criarPedido(newPedidoDto);
 
         assertTrue(response.isSuccess());
         assertNotNull(response.getData());
-        assertEquals(pedidoSalvo.getCodigo(), response.getData().getPedido());
-        assertEquals(pedidoSalvo.getUsuario().getCodigo(), response.getData().getUsuario());
-        assertEquals(pedidoSalvo.getStatus(), response.getData().getStatus());
-        assertEquals(pedidoSalvo.getValorTotal(), response.getData().getValorTotal());
-        assertEquals(pedidoSalvo.getTempoTotalPreparo(), response.getData().getTempoTotalPreparo());
+        assertEquals(100L, response.getData().getPedido());
+
+        verify(usuarioRepository).findById(usuarioId);
+        verify(produtoRepository).findById(produtoId);
+        verify(pedidoRepository).save(any(PedidoEntity.class));
+        verify(pedidoMapper).entityToDto(pedidoSalvo);
     }
 
     @Test
     void testAdicionarPedidoNaFilaComSucesso() {
-        Long codigoPedido = 1L;
+        Long codigo = 1L;
 
-        PedidoEntity pedidoMock = new PedidoEntity();
-        pedidoMock.setCodigo(codigoPedido);
+        PedidoEntity pedidoEntity = new PedidoEntity();
+        pedidoEntity.setCodigo(codigo);
 
-        FilaPedidosPreparacaoEntity filaMock = new FilaPedidosPreparacaoEntity();
-        filaMock.setPedidocodigo(pedidoMock);
+        FilaPedidosPreparacaoEntity filaEntity = new FilaPedidosPreparacaoEntity();
+        filaEntity.setPedidocodigo(pedidoEntity);
 
-        when(pedidoRepository.getReferenceById(codigoPedido)).thenReturn(pedidoMock);
-        when(filaPedidosPreparacaoRepository.save(any(FilaPedidosPreparacaoEntity.class))).thenReturn(filaMock);
+        ViewFilaDto viewFilaDto = new ViewFilaDto();
+        viewFilaDto.setCodigoPedido(codigo);
 
-        ApiResponse<ViewFilaDto> resultado = pedidoService.adicionarPedidoNaFila(codigoPedido);
+        when(pedidoRepository.getReferenceById(codigo)).thenReturn(pedidoEntity);
+        when(filaPedidosPreparacaoRepository.save(any(FilaPedidosPreparacaoEntity.class))).thenReturn(filaEntity);
+        when(filaPedidosPreparacaoMapper.entityToDto(filaEntity)).thenReturn(viewFilaDto);
 
-        assertNotNull(resultado);
-        assertEquals(codigoPedido, resultado.getData().getCodigoPedido());
+        // Act
+        ApiResponse<ViewFilaDto> response = pedidoService.adicionarPedidoNaFila(codigo);
 
-        verify(pedidoRepository).getReferenceById(codigoPedido);
+        // Assert
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getData());
+        assertEquals(codigo, response.getData().getCodigoPedido());
+
+        verify(pedidoRepository).getReferenceById(codigo);
         verify(filaPedidosPreparacaoRepository).save(any(FilaPedidosPreparacaoEntity.class));
+        verify(filaPedidosPreparacaoMapper).entityToDto(filaEntity);
     }
 
     @Test

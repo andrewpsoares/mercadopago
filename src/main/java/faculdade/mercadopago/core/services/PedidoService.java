@@ -10,6 +10,7 @@ import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
 import faculdade.mercadopago.core.domain.dto.ViewFilaDto;
 import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.FilaPedidosPreparacaoMapper;
 import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,21 +37,16 @@ public class PedidoService {
     @Autowired
     private PedidoMapper pedidoMapper;
 
+    @Autowired
+    private FilaPedidosPreparacaoMapper filaPedidosPreparacaoMapper;
+
 
     public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {
         var pedidoEntity = pedidoRepository.getReferenceById(codigo);
         pedidoEntity.setStatus(status);
         var pedido = pedidoRepository.save(pedidoEntity);
 
-
-        var viewPedidoDto = ViewPedidoDto.builder()
-                            .pedido(pedido.getCodigo())
-                            .usuario(pedido.getUsuario().getCodigo())
-                            .status(pedido.getStatus())
-                            .valorTotal(pedido.getValorTotal())
-                            .tempoTotalPreparo(pedido.getTempoTotalPreparo())
-                            .dataHoraSolicitacao(pedido.getDataHoraSolicitacao())
-                            .build();
+        var viewPedidoDto = pedidoMapper.entityToDto(pedido);
         var apiResponse = new ApiResponse<ViewPedidoDto>();
         apiResponse.setSuccess(true);
         apiResponse.setData(viewPedidoDto);
@@ -101,21 +97,12 @@ public class PedidoService {
         PedidoEntity pedidoSalvo = pedidoRepository.save(pedido);
 
         // Monta DTO de resposta
-        ViewPedidoDto viewPedidoDto = ViewPedidoDto.builder()
-                .pedido(pedidoSalvo.getCodigo())
-                .usuario(pedidoSalvo.getUsuario().getCodigo())
-                .status(pedidoSalvo.getStatus())
-                .valorTotal(pedidoSalvo.getValorTotal())
-                .dataHoraSolicitacao(pedidoSalvo.getDataHoraSolicitacao())
-                .tempoTotalPreparo(pedidoSalvo.getTempoTotalPreparo())
-                .build();
+        ViewPedidoDto viewPedidoDto = pedidoMapper.entityToDto(pedidoSalvo);
         ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
         apiResponse.setSuccess(true);
         apiResponse.setData(viewPedidoDto);
-
         return apiResponse;
     }
-
 
     public ApiResponse<ViewFilaDto> adicionarPedidoNaFila(Long codigo){
         var pedido = pedidoRepository.getReferenceById(codigo);
@@ -123,11 +110,7 @@ public class PedidoService {
         pedidoFila.setPedidocodigo(pedido);
         var pedidoIncluso = filaPedidosPreparacaoRepository.save(pedidoFila);
 
-        var viewFilaDto = ViewFilaDto.builder()
-                .codigoPedido(pedido.getCodigo())
-                .status(pedidoIncluso.getPedidocodigo().getStatus())
-                .build();
-
+        var viewFilaDto = filaPedidosPreparacaoMapper.entityToDto(pedidoIncluso);
         var apiResponse = new ApiResponse<ViewFilaDto>();
         apiResponse.setSuccess(true);
         apiResponse.setData(viewFilaDto);

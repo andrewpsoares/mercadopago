@@ -29,19 +29,19 @@ public class EntregaService {
     public ApiResponse<ViewEntregaDto> entregarPedido(EntregaDto entregaDto){
         PedidoEntity pedido = pedidoRepository.getReferenceById(entregaDto.getCodigo());
         pedido.setStatus(entregaDto.getStatus());
-        pedidoRepository.save(pedido);
+        var pedidoSalvo = pedidoRepository.save(pedido);
 
         EntregaEntity entrega = new EntregaEntity();
         entrega.setPedidoCodigo(pedido);
         entrega.setDataHoraEntrega(LocalDateTime.now());
-        entregaRepository.save(entrega);
+        var entregaSalva = entregaRepository.save(entrega);
 
         pedidoService.removerPedidoDaFila(entregaDto.getCodigo());
 
         var viewEntregaDto = ViewEntregaDto.builder()
-                        .DataHoraEntrega(entrega.getDataHoraEntrega())
-                        .codigo(entrega.getCodigo())
-                        .status(entregaDto.getStatus())
+                        .DataHoraEntrega(entregaSalva.getDataHoraEntrega())
+                        .codigo(entregaSalva.getCodigo())
+                        .status(pedidoSalvo.getStatus())
                         .build();
 
         var apiResponse = new ApiResponse<ViewEntregaDto>();
