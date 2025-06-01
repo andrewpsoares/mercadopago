@@ -2,6 +2,13 @@
 
 Essa aplicação foi construida para entrega do Tech Challenge da fase 1. 
 
+Integrantes grupo:
+
+- Andrew do Prado Soares
+- Edmundo Alves Franco Junior
+- Jose Augusto dos Santos - RM 361650
+- Nathalia Matielo - RM 363100
+
 A aplicação contempla a construção de APIs que juntas irão fornecer um sistema de gerenciamento para uma lanchonete.
 
 O sistema possui rotas disponiveis para:
