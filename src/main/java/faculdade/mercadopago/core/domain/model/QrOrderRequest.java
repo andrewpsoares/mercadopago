@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -27,12 +28,12 @@ public class QrOrderRequest {
     private String NotificationUrl;
 
     @JsonProperty("items")
-    private List<Item> Items;
+    private List<ItemRequest> Items;
 
     @NoArgsConstructor
     @AllArgsConstructor
     @Data
-    public static class Item {
+    public static class ItemRequest {
         @JsonProperty("sku_number")
         private String SkuNumber;
 
@@ -46,15 +47,15 @@ public class QrOrderRequest {
         private String Description;
 
         @JsonProperty("quantity")
-        private Double Quantity;
+        private Integer Quantity;
 
         @JsonProperty("unit_measure")
         private String UnitMeasure;
 
         @JsonProperty("unit_price")
-        private Double UnitPrice;
+        private BigDecimal UnitPrice;
 
         @JsonProperty("total_amount")
-        private Double TotalAmount;
+        private BigDecimal TotalAmount;
     }
 }

@@ -3,7 +3,7 @@ package faculdade.mercadopago.core.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import faculdade.mercadopago.AppConstants;
 import faculdade.mercadopago.adapter.driven.entity.PagamentoEntity;
-import faculdade.mercadopago.adapter.driven.repository.PaymentRepository;
+import faculdade.mercadopago.adapter.driven.repository.PagamentoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.NewPaymentDto;
@@ -17,43 +17,44 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class PagamentoService {
-    private final PaymentRepository _paymentRepository;
+    private final PagamentoRepository _pagamentoRepository;
     private final MercadoPagoService _mercadoPagoService;
     private final PedidoRepository _pedidoRepository;
     private final PedidoService _pedidoService;
 
-    public PagamentoService(PaymentRepository paymentRepository, MercadoPagoService mercadoPagoService,
+    public PagamentoService(PagamentoRepository pagamentoRepository, MercadoPagoService mercadoPagoService,
                             PedidoRepository pedidoRepository, PedidoService pedidoService) {
-        _paymentRepository = paymentRepository;
+        _pagamentoRepository = pagamentoRepository;
         _mercadoPagoService = mercadoPagoService;
         _pedidoRepository = pedidoRepository;
         _pedidoService = pedidoService;
     }
 
     public ApiResponse<QrOrderResponse> GerarQrCode(NewPaymentDto paymentDto) {
-        var item = new QrOrderRequest.Item (
-                "123",
-                "lanche",
-                "titulo",
-                "lanche do bom",
-                1.0,
-                "unit",
-                6.0,
-                6.0
-        );
-        var list = new ArrayList<QrOrderRequest.Item>(List.of(item));
+        var listDto = new ArrayList<QrOrderRequest.ItemRequest>();
+        for (NewPaymentDto.ItemPedidoDto item : paymentDto.getItens()){
+            var itemRequest = new QrOrderRequest.ItemRequest(
+                    item.getCodigo().toString(),
+                    "lanche",
+                    "titulo",
+                    "",
+                    item.quantidade,
+                    "unit",
+                    item.Valor,
+                    item.Valor.multiply(BigDecimal.valueOf(item.quantidade)));
+            listDto.add(itemRequest);
+        }
 
         var request = new QrOrderRequest(
                 String.valueOf(paymentDto.OrderId),
                 "Lanchonete",
-                "Descricao",
+                "",
                 paymentDto.TotalAmount,
                 AppConstants.NOTIFICATION_URL,
-                list
+                listDto
         );
 
         var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.GENERATEQRCODEURL_MERCADOPAGO;
@@ -77,7 +78,7 @@ public class PagamentoService {
         return apiResponse;
     }
 
-    public ApiResponse ConfirmaPagamento (QrOrderPagamentoResponse orderResponse) {
+    public ApiResponse ConfirmaPagamento (QrOrderPagamentoResponse orderResponse) throws Exception {
         var url = AppConstants.BASEURL_MERCADOPAGO + AppConstants.CONFIRMPAYMENT_MERCADOPAGO + "/" + orderResponse.getId();
         var response = _mercadoPagoService.SendRequest(url, HttpMethod.GET, PixPaymentResponse.class);
         var apiResponse = new ApiResponse<>();
@@ -118,14 +119,9 @@ public class PagamentoService {
         return apiResponse;
     }
 
-    public boolean CreatePagamento(long orderId, BigDecimal value, String status) {
-        var pedidoOpcional = _pedidoRepository.findById(orderId);
+    public boolean CreatePagamento(long orderId, BigDecimal value, String status) throws Exception {
+        var pedido = _pedidoRepository.findById(orderId).orElseThrow(() -> new Exception("Produto não encontrado"));
 
-        if (pedidoOpcional.isEmpty()) {
-            return false;
-        }
-
-        var pedido = pedidoOpcional.get();
         PagamentoEntity pagamento = new PagamentoEntity(
                 pedido,
                 value,
@@ -133,7 +129,7 @@ public class PagamentoService {
         );
 
         try {
-            var obj = _paymentRepository.save(pagamento);
+            var obj = _pagamentoRepository.save(pagamento);
             return obj.getId() != null;
         } catch (Exception e) {
             ApiResponse<PagamentoEntity> response = new ApiResponse<>();

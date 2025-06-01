@@ -1,16 +1,15 @@
 package faculdade.mercadopago.adapter.driven.entity;
 
+import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "pagamentos")

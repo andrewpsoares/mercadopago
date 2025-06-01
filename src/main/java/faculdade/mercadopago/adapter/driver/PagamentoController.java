@@ -37,7 +37,7 @@ public class PagamentoController {
 
     @Operation(summary = "Confirmar pagamento Mercado Pago", description = "Recebe a confirmação de pagamento recebido pelo mercado pago")
     @PostMapping(path = "/mercadopago/confirmapagamento")
-    public ResponseEntity<ApiResponse> ConfirmaPagamento(@RequestBody QrOrderPagamentoResponse pagamentoResponse) {
+    public ResponseEntity<ApiResponse> ConfirmaPagamento(@RequestBody QrOrderPagamentoResponse pagamentoResponse) throws Exception {
         var response = _pagamentoService.ConfirmaPagamento(pagamentoResponse);
         if (response.isSuccess()) return ResponseEntity.ok(response);
         else return ResponseEntity.badRequest().body(response);
