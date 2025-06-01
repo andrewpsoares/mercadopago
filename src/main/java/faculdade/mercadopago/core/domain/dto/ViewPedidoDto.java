@@ -6,15 +6,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ViewEntregaDto {
-    private long codigo;
+public class ViewPedidoDto {
+    private long pedido;
+    private long usuario;
     private StatusPedidoEnum status;
-    private LocalDateTime DataHoraEntrega;
+    private BigDecimal valorTotal;
+    private LocalDateTime dataHoraSolicitacao;
+    private Time tempoTotalPreparo;
 }

@@ -3,7 +3,6 @@ package faculdade.mercadopago.adapter.driven.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Time;
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -35,13 +36,13 @@ public class PedidoEntity {
     private StatusPedidoEnum status;
 
     @Column(name = "valortotal")
-    private BigDecimal valortotal;
+    private BigDecimal valorTotal;
 
     @Column(name = "datahorasolicitacao")
-    private Date datahorasolicitacao;
+    private LocalDateTime dataHoraSolicitacao;
 
     @Column(name = "tempototalpreparo")
-    private Time tempototalpreparo;
+    private Time tempoTotalPreparo;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoItemEntity> itens;
@@ -52,11 +53,30 @@ public class PedidoEntity {
         }
     }
 
-
-    public void setUsuario(@NotNull Long usuariocodigo) {
+    public BigDecimal calcularValorTotalPedido(List<PedidoItemEntity> itens){
+         return itens.stream()
+                   .map(PedidoItemEntity::calcularPrecoTotalItem)
+                   .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Long getUsuariocodigo() {
-        return this.usuario.getCodigo();
+    public Time calcularTempoTotalDePreparo(List<PedidoItemEntity> itens) {
+        Duration tempoTotal = itens.stream()
+                .map(PedidoItemEntity::calcularTempoTotalItem)
+                .map(Time::toLocalTime)
+                .map(t -> Duration.ofHours(t.getHour()).plusMinutes(t.getMinute()).plusSeconds(t.getSecond()))
+                .reduce(Duration.ZERO, Duration::plus   );
+
+        LocalTime totalTime = LocalTime.MIDNIGHT.plus(tempoTotal);
+        return Time.valueOf(totalTime);
     }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.dataHoraSolicitacao == null) {
+            this.dataHoraSolicitacao = LocalDateTime.now();
+        }
+    }
+
+
+
 }

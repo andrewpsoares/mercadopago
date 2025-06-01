@@ -6,15 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ViewEntregaDto {
+public class ViewFilaDto {
+
     private long codigo;
-    private StatusPedidoEnum status;
-    private LocalDateTime DataHoraEntrega;
+    private long codigoPedido;
+
 }

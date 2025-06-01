@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -24,5 +25,5 @@ public class EntregaEntity {
     private PedidoEntity PedidoCodigo;
 
     @Column(name = "datahoraentrega")
-    private Date DataHoraEntrega;
+    private LocalDateTime DataHoraEntrega;
 }

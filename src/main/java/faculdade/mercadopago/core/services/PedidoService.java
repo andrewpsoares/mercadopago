@@ -1,74 +1,120 @@
 package faculdade.mercadopago.core.services;
 
-import faculdade.mercadopago.adapter.driven.entity.FilaPedidosPreparacaoEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
-import faculdade.mercadopago.adapter.driven.entity.PedidoItemEntity;
+import faculdade.mercadopago.adapter.driven.entity.*;
 import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
-import faculdade.mercadopago.adapter.driven.repository.PedidoItemRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
-import faculdade.mercadopago.core.domain.dto.CriarPedidoDto;
-import faculdade.mercadopago.core.domain.dto.ListarPedidoDto;
+import faculdade.mercadopago.adapter.driven.repository.ProdutoRepository;
+import faculdade.mercadopago.adapter.driven.repository.UsuarioRepository;
+import faculdade.mercadopago.core.applications.ports.ApiResponse;
+import faculdade.mercadopago.core.domain.dto.NewPedidoDto;
+import faculdade.mercadopago.core.domain.dto.ViewFilaDto;
+import faculdade.mercadopago.core.domain.dto.ViewPedidoDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.FilaPedidosPreparacaoMapper;
+import faculdade.mercadopago.core.domain.mapper.PedidoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class PedidoService {
 
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private  PedidoRepository pedidoRepository;
 
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private FilaPedidosPreparacaoRepository filaPedidosPreparacaoRepository;
 
     @Autowired
-    private  PedidoItemRepository pedidoItemRepository;
+    private PedidoMapper pedidoMapper;
 
-    public PedidoEntity alterarPedido(Long codigo, StatusPedidoEnum status) {
-        var pedido = pedidoRepository.getReferenceById(codigo);
-        pedido.alterarStatusPedido(status);
-        pedidoRepository.save(pedido);
-        return pedido;
+    @Autowired
+    private FilaPedidosPreparacaoMapper filaPedidosPreparacaoMapper;
+
+
+    public ApiResponse<ViewPedidoDto> alterarPedido(long codigo, StatusPedidoEnum status) {
+        var pedidoEntity = pedidoRepository.getReferenceById(codigo);
+        pedidoEntity.setStatus(status);
+        var pedido = pedidoRepository.save(pedidoEntity);
+
+        var viewPedidoDto = pedidoMapper.entityToDto(pedido);
+        var apiResponse = new ApiResponse<ViewPedidoDto>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewPedidoDto);
+        return apiResponse;
     }
 
-    public Page<ListarPedidoDto> listarPedidos(Pageable pageable, StatusPedidoEnum status){
-        return pedidoRepository.findAllByStatus(pageable, status).map(ListarPedidoDto::new);
+    public ApiResponse<List<ViewPedidoDto>> listarPedidos(StatusPedidoEnum status){
+        var listaPedidos = pedidoRepository.findAllByStatus(status);
+        var listViewPedidoDto = listaPedidos.stream()
+                .map(pedidoMapper::entityToDto)
+                .toList();
+        return ApiResponse.ok(listViewPedidoDto);
     }
 
-//    public PedidoEntity criarPedido(CriarPedidoDto dados){
-//
-//        PedidoEntity pedido = new PedidoEntity();
-//        System.out.println(dados);
-//        List<PedidoItemEntity> itens = dados.itens().stream().map(
-//                itemDto ->{
-//                    PedidoItemEntity item = new PedidoItemEntity();
-//                    item.setPedido(pedido);
-//                    item.setProdutoCodigo(itemDto.produtocodigo());
-//                    item.setQuantidade(itemDto.quantidade());
-//                    item.setPrecoUnitario(itemDto.precounitario());
-//                    item.setPrecoTotal(itemDto.precototal());
-//                    return  item;
-//                }).toList();
-//
-//        pedido.setUsuario(dados.usuariocodigo());
-//        pedido.setStatus(StatusPedidoEnum.RECEBIDO);
-//        pedido.setValortotal(dados.valortotal());
-//        pedido.setDatahorasolicitacao(dados.datahorasolicitacao());
-//        pedido.setTempototalpreparo(dados.tempototalpreparo());
-//        pedido.setItens(itens);
-//        return  pedidoRepository.save(pedido);
-//    }
+    public ApiResponse<ViewPedidoDto> criarPedido(NewPedidoDto dados) {
+        PedidoEntity pedido = new PedidoEntity();
+        // Identifica Usuário
+        UsuarioEntity usuario = usuarioRepository.findById(dados.getUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: código " + dados.getUsuario()));
+        pedido.setUsuario(usuario);
 
-    public FilaPedidosPreparacaoEntity adicionarPedidoNaFila(Long codigo){
+        // Adiciona Status e Data/Hora
+        pedido.setStatus(StatusPedidoEnum.RECEBIDO);
+        pedido.setDataHoraSolicitacao(LocalDateTime.now());
+
+        // Cria os itens do pedido
+        List<PedidoItemEntity> itens = dados.getItens().stream()
+                .map(itemDto -> {
+                    ProdutoEntity produto = produtoRepository.findById(itemDto.getProdutocodigo())
+                            .orElseThrow(() -> new RuntimeException("Produto não encontrado: código " + itemDto.getProdutocodigo()));
+
+                    return PedidoItemEntity.builder()
+                            .pedido(pedido)
+                            .produtocodigo(produto)
+                            .quantidade(itemDto.getQuantidade())
+                            .precounitario(produto.getPreco())
+                            .precototal(produto.getPreco().multiply(BigDecimal.valueOf(itemDto.getQuantidade())))
+                            .build();
+                })
+                .toList();
+
+        // Calcula e define os valores do pedido
+        pedido.setTempoTotalPreparo(pedido.calcularTempoTotalDePreparo(itens));
+        pedido.setValorTotal(pedido.calcularValorTotalPedido(itens));
+        pedido.setItens(itens);
+
+        // Persiste o pedido
+        PedidoEntity pedidoSalvo = pedidoRepository.save(pedido);
+
+        // Monta DTO de resposta
+        ViewPedidoDto viewPedidoDto = pedidoMapper.entityToDto(pedidoSalvo);
+        ApiResponse<ViewPedidoDto> apiResponse = new ApiResponse<>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewPedidoDto);
+        return apiResponse;
+    }
+
+    public ApiResponse<ViewFilaDto> adicionarPedidoNaFila(Long codigo){
         var pedido = pedidoRepository.getReferenceById(codigo);
         FilaPedidosPreparacaoEntity pedidoFila = new FilaPedidosPreparacaoEntity();
         pedidoFila.setPedidocodigo(pedido);
-        return filaPedidosPreparacaoRepository.save(pedidoFila);
+        var pedidoIncluso = filaPedidosPreparacaoRepository.save(pedidoFila);
+
+        var viewFilaDto = filaPedidosPreparacaoMapper.entityToDto(pedidoIncluso);
+        var apiResponse = new ApiResponse<ViewFilaDto>();
+        apiResponse.setSuccess(true);
+        apiResponse.setData(viewFilaDto);
+        return apiResponse;
     }
 
     public void removerPedidoDaFila(Long codigo){

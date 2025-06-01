@@ -3,15 +3,16 @@ package faculdade.mercadopago.core.services;
 import faculdade.mercadopago.adapter.driven.entity.EntregaEntity;
 import faculdade.mercadopago.adapter.driven.entity.PedidoEntity;
 import faculdade.mercadopago.adapter.driven.repository.EntregaRepository;
-import faculdade.mercadopago.adapter.driven.repository.FilaPedidosPreparacaoRepository;
 import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
-import faculdade.mercadopago.core.domain.dto.ViewProdutoDto;
-import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.EntregaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 public class EntregaService {
@@ -23,25 +24,25 @@ public class EntregaService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
+    private EntregaMapper entregaMapper;
+
+    @Autowired
     private PedidoService pedidoService;
 
 
     public ApiResponse<ViewEntregaDto> entregarPedido(EntregaDto entregaDto){
         PedidoEntity pedido = pedidoRepository.getReferenceById(entregaDto.getCodigo());
         pedido.setStatus(entregaDto.getStatus());
-        pedidoRepository.save(pedido);
+        var pedidoSalvo = pedidoRepository.save(pedido);
 
         EntregaEntity entrega = new EntregaEntity();
-        entrega.setPedidoCodigo(pedido);
-        entregaRepository.save(entrega);
+        entrega.setPedidoCodigo(pedidoSalvo);
+        entrega.setDataHoraEntrega(LocalDateTime.now());
+        var entregaSalva = entregaRepository.save(entrega);
 
         pedidoService.removerPedidoDaFila(entregaDto.getCodigo());
 
-        var viewEntregaDto = ViewEntregaDto.builder()
-                        .DataHoraEntrega(entrega.getDataHoraEntrega())
-                        .codigo(entrega.getCodigo())
-                        .status(entregaDto.getStatus())
-                        .build();
+        var viewEntregaDto = entregaMapper.entityToDto(entregaSalva);
 
         var apiResponse = new ApiResponse<ViewEntregaDto>();
         apiResponse.setSuccess(true);
