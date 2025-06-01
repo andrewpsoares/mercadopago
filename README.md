@@ -2,6 +2,12 @@
 
 Essa aplicação foi construida para entrega do Tech Challenge da fase 1. 
 
+Integrantes grupo:
+
+- Edmundo Alves Franco Junior
+- Jose Augusto - RM 361650
+- Nathalia Matielo - RM363100
+
 A aplicação contempla a construção de APIs que juntas irão fornecer um sistema de gerenciamento para uma lanchonete.
 
 O sistema possui rotas disponiveis para:
@@ -144,7 +150,7 @@ http://localhost:8080/swagger-ui/index.html
 
 #### 📄 Listar pedidos por status
 
-**GET** `/pedido?status=EM PREPARO`
+**GET** `/pedido?status=RECEBIDO`
 
 **Resposta (paginada):**
 ```json
@@ -152,10 +158,8 @@ http://localhost:8080/swagger-ui/index.html
   "content": [
     {
       "codigo": 1,
-      "status": "EM PREPARAÇÃO",
-      "itens": [
-        
-      ]
+      "status": "RECEBIDO",
+      "itens": []
     }
   ],
   "totalPages": 1,
@@ -169,14 +173,14 @@ http://localhost:8080/swagger-ui/index.html
 
 **Body:**
 ```json
-"EM_PREPARO"
+"EM_PREPARAÇÃO"
 ```
 
 **Resposta:**
 ```json
 {
   "codigo": 1,
-  "status": "EM_PREPARO"
+  "status": "EM_PREPARAÇÃO"
 }
 ```
 
@@ -245,7 +249,7 @@ http://localhost:8080/swagger-ui/index.html
 ```json
 {
   "pedidoId": 1,
-  "nomeEntregador": "Carlos Motoboy"
+  "status": "FINALIZADO"
 }
 ```
 
@@ -255,51 +259,16 @@ http://localhost:8080/swagger-ui/index.html
   "success": true,
   "data": {
     "pedidoId": 1,
-    "status": "ENTREGUE",
-    "entregador": "Carlos Motoboy"
+    "status": "FINALIZADO "
   }
 }
 ```
 
 ---
 
-## ✅ Testes Automatizados
-
-Utilize JUnit 5 e Mockito para testar a camada de controller e serviços:
-
-```bash
-./mvnw test
-```
-
-Exemplo de estrutura de teste:
-
-```java
-@ExtendWith(MockitoExtension.class)
-class ProdutoControllerTest {
-
-    @Mock
-    private ProdutoService produtoService;
-
-    @InjectMocks
-    private ProdutoController controller;
-
-    @Test
-    void deveBuscarProdutoPorCodigo() throws Exception {
-        var produto = ViewProdutoDto.builder().codigo(1).nome("X-Burger").build();
-        var response = ApiResponse.ok(produto);
-
-        when(produtoService.buscarProduto(1L)).thenReturn(response);
-
-        var result = controller.buscarPorCodigoProduto(1L);
-        assertEquals(200, result.getStatusCodeValue());
-    }
-}
-```
-
----
 
 ## 📌 Observações Finais
 
 - Todas as respostas seguem o padrão de `ApiResponse<T>`.
-- A API não possui autenticação implementada (considerar em produção).
+- A API não possui autenticação implementada.
 - Configure o banco de dados no `application.properties`.
