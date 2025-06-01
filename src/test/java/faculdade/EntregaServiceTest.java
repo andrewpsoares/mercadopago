@@ -8,6 +8,7 @@ import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
 import faculdade.mercadopago.core.domain.enums.StatusPedidoEnum;
+import faculdade.mercadopago.core.domain.mapper.EntregaMapper;
 import faculdade.mercadopago.core.services.EntregaService;
 import faculdade.mercadopago.core.services.PedidoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class EntregaServiceTest {
@@ -32,6 +34,9 @@ public class EntregaServiceTest {
     @Mock
     private PedidoService pedidoService;
 
+    @Mock
+    private EntregaMapper entregaMapper;
+
     @InjectMocks
     private EntregaService entregaService;
 
@@ -42,39 +47,45 @@ public class EntregaServiceTest {
 
     @Test
     public void testEntregarPedido() {
-        long codigoPedido = 10;
-        StatusPedidoEnum status = StatusPedidoEnum.FINALIZADO;
-        LocalDateTime dataEntrega = LocalDateTime.now();
-
         EntregaDto entregaDto = new EntregaDto();
-        entregaDto.setCodigo(codigoPedido);
-        entregaDto.setStatus(status);
+        entregaDto.setCodigo(1L);
+        entregaDto.setStatus(StatusPedidoEnum.FINALIZADO);
 
         PedidoEntity pedido = new PedidoEntity();
-        pedido.setCodigo(codigoPedido);
-        pedido.setStatus(status);
+        pedido.setCodigo(1L);
+        pedido.setStatus(StatusPedidoEnum.PRONTO);
 
-        EntregaEntity entregaEntity = new EntregaEntity();
-        entregaEntity.setCodigo(10);
-        entregaEntity.setPedidoCodigo(pedido);
-        entregaEntity.setDataHoraEntrega(dataEntrega);
+        PedidoEntity pedidoAtualizado = new PedidoEntity();
+        pedidoAtualizado.setCodigo(1L);
+        pedidoAtualizado.setStatus(StatusPedidoEnum.FINALIZADO);
 
-        when(pedidoRepository.getReferenceById(codigoPedido)).thenReturn(pedido);
-        when(pedidoRepository.save(pedido)).thenReturn(pedido);
-        when(entregaRepository.save(any(EntregaEntity.class)))
-                .thenAnswer(invocation -> {
-                    EntregaEntity entity = invocation.getArgument(0);
-                    entity.setCodigo(10);
-                    entity.setDataHoraEntrega(LocalDateTime.now());
-                    return entity;
-                });
+        EntregaEntity entrega = new EntregaEntity();
+        entrega.setPedidoCodigo(pedidoAtualizado);
+        entrega.setDataHoraEntrega(LocalDateTime.now());
 
+        EntregaEntity entregaSalva = new EntregaEntity();
+        entregaSalva.setPedidoCodigo(pedidoAtualizado);
+        entregaSalva.setDataHoraEntrega(entrega.getDataHoraEntrega());
 
+        ViewEntregaDto viewEntregaDto = new ViewEntregaDto();
+        viewEntregaDto.setStatus(StatusPedidoEnum.FINALIZADO);
+
+        when(pedidoRepository.getReferenceById(1L)).thenReturn(pedido);
+        when(pedidoRepository.save(any(PedidoEntity.class))).thenReturn(pedidoAtualizado);
+        when(entregaRepository.save(any(EntregaEntity.class))).thenReturn(entregaSalva);
+        when(entregaMapper.entityToDto(entregaSalva)).thenReturn(viewEntregaDto);
+
+        // Act
         ApiResponse<ViewEntregaDto> response = entregaService.entregarPedido(entregaDto);
 
-        assertEquals(true, response.isSuccess());
-        assertEquals(status, response.getData().getStatus());
-        assertEquals(10, response.getData().getCodigo());
-        verify(pedidoService, times(1)).removerPedidoDaFila(codigoPedido);
+        // Assert
+        assertTrue(response.isSuccess());
+        assertEquals(StatusPedidoEnum.FINALIZADO, response.getData().getStatus());
+
+        verify(pedidoRepository).getReferenceById(1L);
+        verify(pedidoRepository).save(pedido);
+        verify(entregaRepository).save(any(EntregaEntity.class));
+        verify(pedidoService).removerPedidoDaFila(1L);
+        verify(entregaMapper).entityToDto(entregaSalva);
     }
 }

@@ -7,6 +7,7 @@ import faculdade.mercadopago.adapter.driven.repository.PedidoRepository;
 import faculdade.mercadopago.core.applications.ports.ApiResponse;
 import faculdade.mercadopago.core.domain.dto.EntregaDto;
 import faculdade.mercadopago.core.domain.dto.ViewEntregaDto;
+import faculdade.mercadopago.core.domain.mapper.EntregaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,9 @@ public class EntregaService {
     private PedidoRepository pedidoRepository;
 
     @Autowired
+    private EntregaMapper entregaMapper;
+
+    @Autowired
     private PedidoService pedidoService;
 
 
@@ -32,17 +36,13 @@ public class EntregaService {
         var pedidoSalvo = pedidoRepository.save(pedido);
 
         EntregaEntity entrega = new EntregaEntity();
-        entrega.setPedidoCodigo(pedido);
+        entrega.setPedidoCodigo(pedidoSalvo);
         entrega.setDataHoraEntrega(LocalDateTime.now());
         var entregaSalva = entregaRepository.save(entrega);
 
         pedidoService.removerPedidoDaFila(entregaDto.getCodigo());
 
-        var viewEntregaDto = ViewEntregaDto.builder()
-                        .DataHoraEntrega(entregaSalva.getDataHoraEntrega())
-                        .codigo(entregaSalva.getCodigo())
-                        .status(pedidoSalvo.getStatus())
-                        .build();
+        var viewEntregaDto = entregaMapper.entityToDto(entregaSalva);
 
         var apiResponse = new ApiResponse<ViewEntregaDto>();
         apiResponse.setSuccess(true);
