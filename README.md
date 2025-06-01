@@ -14,6 +14,10 @@ O sistema possui rotas disponiveis para:
 
 
 ---
+## 📚 DDD
+
+Conheça o DDD do projeto no link: https://miro.com/app/board/uXjVI9DOubQ=/
+
 
 ## ✅ Tecnologias Utilizadas
 
@@ -24,6 +28,9 @@ O sistema possui rotas disponiveis para:
 ---
 
 ## 🚀 Como Executar Localmente
+
+- Baixar e installar JDK17
+- Baixar e instalar Maven
 
 ```bash
 git clone https://github.com/andrewpsoares/mercadopago.git
@@ -144,7 +151,7 @@ http://localhost:8080/swagger-ui/index.html
 
 #### 📄 Listar pedidos por status
 
-**GET** `/pedido?status=EM PREPARO`
+**GET** `/pedido?status=RECEBIDO`
 
 **Resposta (paginada):**
 ```json
@@ -152,9 +159,16 @@ http://localhost:8080/swagger-ui/index.html
   "content": [
     {
       "codigo": 1,
-      "status": "EM PREPARAÇÃO",
+      "status": "RECEBIDO",
       "itens": [
-        
+        {
+          "codigo": 2,
+          "nome": "Coca-Cola",
+          "descricao": "Refrigerante 350ml",
+          "categoria": 10,
+          "preco": 5.00,
+          "tempopreparo": "00:01:00"
+        }
       ]
     }
   ],
@@ -169,14 +183,14 @@ http://localhost:8080/swagger-ui/index.html
 
 **Body:**
 ```json
-"EM_PREPARO"
+"EM PREPARAÇÃO"
 ```
 
 **Resposta:**
 ```json
 {
   "codigo": 1,
-  "status": "EM_PREPARO"
+  "status": "EM PREPARAÇÃO"
 }
 ```
 
@@ -245,7 +259,7 @@ http://localhost:8080/swagger-ui/index.html
 ```json
 {
   "pedidoId": 1,
-  "nomeEntregador": "Carlos Motoboy"
+  "status": "FINALIZADO"
 }
 ```
 
@@ -255,51 +269,16 @@ http://localhost:8080/swagger-ui/index.html
   "success": true,
   "data": {
     "pedidoId": 1,
-    "status": "ENTREGUE",
-    "entregador": "Carlos Motoboy"
+    "status": "FINALIZADO"
   }
 }
 ```
 
----
-
-## ✅ Testes Automatizados
-
-Utilize JUnit 5 e Mockito para testar a camada de controller e serviços:
-
-```bash
-./mvnw test
-```
-
-Exemplo de estrutura de teste:
-
-```java
-@ExtendWith(MockitoExtension.class)
-class ProdutoControllerTest {
-
-    @Mock
-    private ProdutoService produtoService;
-
-    @InjectMocks
-    private ProdutoController controller;
-
-    @Test
-    void deveBuscarProdutoPorCodigo() throws Exception {
-        var produto = ViewProdutoDto.builder().codigo(1).nome("X-Burger").build();
-        var response = ApiResponse.ok(produto);
-
-        when(produtoService.buscarProduto(1L)).thenReturn(response);
-
-        var result = controller.buscarPorCodigoProduto(1L);
-        assertEquals(200, result.getStatusCodeValue());
-    }
-}
-```
 
 ---
 
 ## 📌 Observações Finais
 
 - Todas as respostas seguem o padrão de `ApiResponse<T>`.
-- A API não possui autenticação implementada (considerar em produção).
+- A API não possui autenticação implementada.
 - Configure o banco de dados no `application.properties`.
