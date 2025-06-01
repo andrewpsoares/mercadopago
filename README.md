@@ -4,6 +4,7 @@ Essa aplicação foi construida para entrega do Tech Challenge da fase 1.
 
 Integrantes grupo:
 
+- Andrew do Prado Soares
 - Edmundo Alves Franco Junior
 - Jose Augusto - RM 361650
 - Nathalia Matielo - RM363100
@@ -18,6 +19,12 @@ O sistema possui rotas disponiveis para:
 - Gestão de pagamentos
 - Gerenciamento de status e entrega do pedido
 
+---
+
+
+## 📚 DDD
+
+Conheça o DDD do nosso projeto no link: https://miro.com/app/board/uXjVI9DOubQ=/
 
 ---
 
@@ -30,6 +37,9 @@ O sistema possui rotas disponiveis para:
 ---
 
 ## 🚀 Como Executar Localmente
+
+- Baixar e instalar JDK 17
+- Baixar e instalar Maven
 
 ```bash
 git clone https://github.com/andrewpsoares/mercadopago.git
@@ -173,14 +183,14 @@ http://localhost:8080/swagger-ui/index.html
 
 **Body:**
 ```json
-"EM_PREPARAÇÃO"
+"EM PREPARAÇÃO"
 ```
 
 **Resposta:**
 ```json
 {
   "codigo": 1,
-  "status": "EM_PREPARAÇÃO"
+  "status": "EM PREPARAÇÃO"
 }
 ```
 
